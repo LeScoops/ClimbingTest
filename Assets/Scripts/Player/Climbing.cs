@@ -12,12 +12,13 @@ public class Climbing : MonoBehaviour
     [SerializeField] float rotateSpeed = 5.0f;
     [SerializeField] float rayTowardsMoveDir = 1.0f;
     [SerializeField] float rayForwardTowardsWall = 1.0f;
+    [SerializeField] float baseStaminaDrainRate = 0.4f;
+    [SerializeField] float staminaDrainRate = 10.0f;
 
     bool inPosition;
     bool isLerping;
     bool isMid;
     float t;
-    //float delta;
     float horiz;
     float vert;
     Vector3 startPosition;
@@ -26,10 +27,12 @@ public class Climbing : MonoBehaviour
     Quaternion targetRotation;
     Transform helper;
     PlayerMovement playerMovementScript;
+    Stamina playerStamina;
 
     private void Start()
     {
         playerMovementScript = GetComponent<PlayerMovement>();
+        playerStamina = GetComponent<Stamina>();
         Init();
     }
 
@@ -40,14 +43,11 @@ public class Climbing : MonoBehaviour
         CheckForClimb();
     }
 
-    //private void Update()
-    //{
-    //    delta = Time.deltaTime;
-    //    Tick();
-    //}
-
     public void Tick(float delta)
     {
+        if (!playerStamina.ApplyStaminaChangeIfAvailable(-baseStaminaDrainRate * delta))
+            DetachFromWall();
+
         if (!inPosition)
         {
             GetInPosition(delta);
@@ -86,8 +86,6 @@ public class Climbing : MonoBehaviour
             tp *= positionOffset;
             tp += transform.position;
             targetPosition = (isMid) ? tp : helper.position;
-
-            //targetPosition = helper.position;
         }
         else
         {
@@ -98,10 +96,13 @@ public class Climbing : MonoBehaviour
                 isLerping = false;
             }
 
-            // cp  is climb position
+            // cp is climb position
             Vector3 cp = Vector3.Lerp(startPosition, targetPosition, t);
             transform.position = cp;
             transform.rotation = Quaternion.Slerp(transform.rotation, helper.rotation, delta * rotateSpeed);
+
+            if (!playerStamina.ApplyStaminaChangeIfAvailable(-staminaDrainRate * delta))
+                DetachFromWall();
 
             LookForGround();
         }
@@ -217,10 +218,7 @@ public class Climbing : MonoBehaviour
 
         if (Physics.Raycast(origin, direction, out hit, 1.2f))
         {
-            isClimbing = false;
-            inPosition = false;
-            playerMovementScript.isClimbing = false;
-            playerMovementScript.ResetRotation();
+            DetachFromWall();
         }
     }
 
@@ -228,13 +226,8 @@ public class Climbing : MonoBehaviour
     {
         isClimbing = false;
         inPosition = false;
+        playerStamina.ResetStamina();
         playerMovementScript.isClimbing = false;
         playerMovementScript.ResetRotation();
     }
-}
-
-[System.Serializable]
-public class IKSnapshot
-{
-    public Vector3 rh, lh, rf, lf;
 }
