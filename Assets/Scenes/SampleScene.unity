@@ -207,13 +207,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 100133094}
-  m_LocalRotation: {x: -0, y: -0, z: 0.09347695, w: 0.9956215}
-  m_LocalPosition: {x: 0, y: 4.12, z: 0}
+  m_LocalRotation: {x: -0.06453799, y: -0.68739355, z: 0.067622356, w: 0.7202445}
+  m_LocalPosition: {x: 1, y: 4.12, z: -12.9}
   m_LocalScale: {x: 56.67901, y: 1, z: 5}
   m_Children: []
   m_Father: {fileID: 1573809842}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 10.727}
+  m_LocalEulerAnglesHint: {x: 0, y: -87.326004, z: 10.727}
 --- !u!1 &141796136
 GameObject:
   m_ObjectHideFlags: 0
@@ -1253,10 +1253,12 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   groundCheck: {fileID: 723810108}
-  speed: 12
+  baseSpeed: 12
+  sprintModifier: 2
   jumpHeight: 3
   groundDistance: 0.4
   gravity: -19.62
+  staminaRechargeRate: 20
   isGrounded: 0
 --- !u!114 &1811443479
 MonoBehaviour:
@@ -1274,7 +1276,7 @@ MonoBehaviour:
   positionOffset: 1
   offsetFromWall: 0.75
   climbSpeedMultiplier: 0.2
-  climbingSpeed: 10
+  climbingSpeed: 20
   rotateSpeed: 5
   rayTowardsMoveDir: 1
   rayForwardTowardsWall: 1

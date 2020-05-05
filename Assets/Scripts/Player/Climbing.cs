@@ -117,6 +117,7 @@ public class Climbing : MonoBehaviour
         if (Physics.Raycast(origin, dir, out hit, 5))
         {
             helper.transform.position = PosWithOffset(origin, hit.point);
+            playerMovementScript.ResetCurrentSpeed();
             InitForClimb(hit);
             return true;
         }
@@ -226,7 +227,6 @@ public class Climbing : MonoBehaviour
     {
         isClimbing = false;
         inPosition = false;
-        playerStamina.ResetStamina();
         playerMovementScript.isClimbing = false;
         playerMovementScript.ResetRotation();
     }

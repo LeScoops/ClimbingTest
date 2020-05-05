@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 public class Stamina : MonoBehaviour
 {
-    [SerializeField] float baseStamina = 100;
+    [SerializeField] float baseStamina = 100.0f;
     [SerializeField] float currentStamina;
     [SerializeField] Text staminaText;
 
@@ -38,5 +38,14 @@ public class Stamina : MonoBehaviour
             return false;
     }
 
-    void UpdateText() { staminaText.text = "Stamina: " + currentStamina; }
+    public void RechargeStamina(float rechargeRate)
+    {
+        if (currentStamina < baseStamina)
+            currentStamina += rechargeRate;
+        else
+            currentStamina = baseStamina;
+        UpdateText();
+    }
+
+    void UpdateText() { staminaText.text = string.Format("Stamina: {0:#.00}", currentStamina); }
 }
