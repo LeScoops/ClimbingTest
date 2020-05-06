@@ -16,8 +16,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float staminaRechargeRate = 1.0f;
     [SerializeField] bool isGrounded;
 
-    Climbing climbingScript;
+    Climbing playerClimbing;
     Stamina playerStamina;
+    Gliding playerGliding;
     Vector3 velocity;
     float delta;
     float currentSpeed;
@@ -25,8 +26,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void Start()
     {
-        climbingScript = GetComponent<Climbing>();
+        playerClimbing = GetComponent<Climbing>();
         playerStamina = GetComponent<Stamina>();
+        playerGliding = GetComponent<Gliding>();
     }
 
     void Update()
@@ -36,20 +38,20 @@ public class PlayerMovement : MonoBehaviour
 
         if (isClimbing)
         {
-            climbingScript.Tick(delta);
+            playerClimbing.Tick(delta);
 
             if (Input.GetKeyDown(KeyCode.C))
-                climbingScript.DetachFromWall();
+                playerClimbing.DetachFromWall();
 
             return;
         }
         else
         {
             if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f)
-                isClimbing = climbingScript.CheckForClimb();
+                isClimbing = playerClimbing.CheckForClimb();
 
             if (isGrounded)
-                playerStamina.RechargeStamina(staminaRechargeRate * Time.deltaTime);
+                playerStamina.RechargeStamina(staminaRechargeRate * delta);
 
             Movement();
         }
@@ -74,14 +76,23 @@ public class PlayerMovement : MonoBehaviour
         }
 
         Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * currentSpeed * Time.deltaTime);
+        controller.Move(move * currentSpeed * delta);
 
+        // Jump
         if (Input.GetButtonDown("Jump") && isGrounded)
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
 
-
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
+        // Attempt Gliding else apply gravity
+        if (Input.GetButton("Jump") && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
+        {
+            velocity.y = -2.0f;
+            controller.Move(playerGliding.GlidingMovement() * delta);
+        }
+        else
+        {
+            velocity.y += gravity * delta;
+            controller.Move(velocity * delta);
+        }
     }
 
     public void ResetRotation() { transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.y, 0)); }
