@@ -8,11 +8,13 @@ public class Gliding : MonoBehaviour
     [SerializeField] float glidingGravity = -4.0f;
     [SerializeField] float glidingSpeed = 5.0f;
 
-    public Vector3 GlidingMovement()
+    //CharacterController controller;
+
+    public void GlidingMovement(CharacterController controller, float delta)
     {
-        Vector3 test = transform.forward * glidingSpeed;
-        test.y = glidingGravity;
-        return test;
+        Vector3 glidingMovement = transform.forward * glidingSpeed;
+        glidingMovement.y = glidingGravity;
+        controller.Move(glidingMovement * delta);
     }
 
     public float GetStaminaRequirement() { return glidingStaminaRequirement; }

@@ -1192,8 +1192,8 @@ GameObject:
   - component: {fileID: 1811443476}
   - component: {fileID: 1811443478}
   - component: {fileID: 1811443479}
-  - component: {fileID: 1811443480}
   - component: {fileID: 1811443481}
+  - component: {fileID: 1811443480}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1227,7 +1227,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1811443475}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 77.1, z: 7.71}
+  m_LocalPosition: {x: 0, y: 34.9, z: 31.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1603038146}
@@ -1260,7 +1260,6 @@ MonoBehaviour:
   groundDistance: 0.4
   gravity: -19.62
   staminaRechargeRate: 20
-  isGrounded: 0
 --- !u!114 &1811443479
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -14,7 +14,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float groundDistance = 0.4f;
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float staminaRechargeRate = 1.0f;
-    [SerializeField] bool isGrounded;
 
     Climbing playerClimbing;
     Stamina playerStamina;
@@ -22,6 +21,8 @@ public class PlayerMovement : MonoBehaviour
     Vector3 velocity;
     float delta;
     float currentSpeed;
+    bool isGrounded;
+    bool isGliding;
     bool isSprinting;
 
     private void Start()
@@ -42,16 +43,20 @@ public class PlayerMovement : MonoBehaviour
 
             if (Input.GetKeyDown(KeyCode.C))
                 playerClimbing.DetachFromWall();
-
-            return;
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f)
+            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || !isGrounded)
                 isClimbing = playerClimbing.CheckForClimb();
 
             if (isGrounded)
                 playerStamina.RechargeStamina(staminaRechargeRate * delta);
+
+            if (isGliding && Input.GetKeyDown(KeyCode.E))
+            {
+                isGliding = false;
+                return;
+            }
 
             Movement();
         }
@@ -65,15 +70,9 @@ public class PlayerMovement : MonoBehaviour
         float z = Input.GetAxis("Vertical");
 
         if (Input.GetKey(KeyCode.LeftShift) & isGrounded)
-        {
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
-            isSprinting = true;
-        }
         else
-        {
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta);
-            isSprinting = false;
-        }
 
         Vector3 move = transform.right * x + transform.forward * z;
         controller.Move(move * currentSpeed * delta);
@@ -82,11 +81,18 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetButtonDown("Jump") && isGrounded)
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
 
-        // Attempt Gliding else apply gravity
-        if (Input.GetButton("Jump") && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
+        // Gliding
+        if (Input.GetKeyDown(KeyCode.E) && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
+            isGliding = true;
+
+        if (isGliding)
         {
             velocity.y = -2.0f;
-            controller.Move(playerGliding.GlidingMovement() * delta);
+
+            if (playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta) && !isGrounded)
+                playerGliding.GlidingMovement(controller, delta);
+            else
+                isGliding = false;
         }
         else
         {
