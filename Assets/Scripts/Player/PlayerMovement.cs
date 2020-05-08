@@ -46,8 +46,12 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || !isGrounded)
+            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || (!isGrounded && isGliding))
+            {
                 isClimbing = playerClimbing.CheckForClimb();
+                if (isClimbing)
+                    isGliding = false;
+            }
 
             if (isGrounded)
                 playerStamina.RechargeStamina(staminaRechargeRate * delta);
@@ -74,9 +78,6 @@ public class PlayerMovement : MonoBehaviour
         else
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta);
 
-        Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * currentSpeed * delta);
-
         // Jump
         if (Input.GetButtonDown("Jump") && isGrounded)
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
@@ -84,6 +85,9 @@ public class PlayerMovement : MonoBehaviour
         // Gliding
         if (Input.GetKeyDown(KeyCode.E) && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
             isGliding = true;
+
+        Vector3 move = transform.right * x + transform.forward * z;
+        controller.Move(move * currentSpeed * delta);
 
         if (isGliding)
         {

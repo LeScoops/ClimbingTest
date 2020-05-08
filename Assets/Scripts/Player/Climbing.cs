@@ -110,11 +110,13 @@ public class Climbing : MonoBehaviour
 
     public bool CheckForClimb()
     {
+        int layermask = 1 << 9;
+        layermask = ~layermask;
         Vector3 origin = transform.position;
         origin.y += 1.4f;
         Vector3 dir = transform.forward;
         RaycastHit hit;
-        if (Physics.Raycast(origin, dir, out hit, 5))
+        if (Physics.Raycast(origin, dir, out hit, 5, layermask))
         {
             helper.transform.position = PosWithOffset(origin, hit.point);
             playerMovementScript.ResetCurrentSpeed();
@@ -137,7 +139,6 @@ public class Climbing : MonoBehaviour
     bool CanMove(Vector3 moveDir)
     {
         Vector3 origin = transform.position;
-        // Raycast pointing parallel to wall
         float distance = rayTowardsMoveDir;
         Vector3 direction = moveDir;
         DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
