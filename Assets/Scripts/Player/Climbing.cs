@@ -228,6 +228,7 @@ public class Climbing : MonoBehaviour
     {
         isClimbing = false;
         inPosition = false;
+        //helper.rotation = Quaternion.identity;
         playerMovementScript.isClimbing = false;
         playerMovementScript.ResetRotation();
     }

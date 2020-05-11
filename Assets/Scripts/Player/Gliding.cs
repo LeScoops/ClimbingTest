@@ -6,7 +6,7 @@ public class Gliding : MonoBehaviour
 {
     [SerializeField] float glidingStaminaRequirement = -5.0f;
     [SerializeField] float glidingGravity = -4.0f;
-    [SerializeField] float glidingSpeed = 15.0f;
+    [SerializeField] float glidingSpeed = 12.0f;
 
     public void GlidingMovement(CharacterController controller, float delta)
     {

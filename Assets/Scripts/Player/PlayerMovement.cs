@@ -15,6 +15,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float staminaRechargeRate = 1.0f;
 
+    [SerializeField] float wallRunDistance = 5.0f;
+    [SerializeField] float isJumpingTimer = 3.0f;
+
     Climbing playerClimbing;
     Stamina playerStamina;
     Gliding playerGliding;
@@ -22,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     float delta;
     float currentSpeed;
     bool isGrounded;
+    bool isJumping;
+    bool isWallRunning;
+    bool isOnWall;
     bool isGliding;
     bool isSprinting;
 
@@ -80,14 +86,16 @@ public class PlayerMovement : MonoBehaviour
 
         // Jump
         if (Input.GetButtonDown("Jump") && isGrounded)
+        {
             velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
+            StartCoroutine(JumpControl());
+        }
 
         // Gliding
         if (Input.GetKeyDown(KeyCode.E) && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
             isGliding = true;
 
         Vector3 move = transform.right * x + transform.forward * z;
-        controller.Move(move * currentSpeed * delta);
 
         if (isGliding)
         {
@@ -97,12 +105,64 @@ public class PlayerMovement : MonoBehaviour
                 playerGliding.GlidingMovement(controller, delta);
             else
                 isGliding = false;
+
+            controller.Move(move * currentSpeed * delta);
         }
         else
         {
-            velocity.y += gravity * delta;
+            if (Input.GetButton("Jump") && WallRunning() && isJumping)
+            {
+                if (!isWallRunning)
+                    StartCoroutine(WallRunControl());
+                move = transform.forward;
+                velocity.y += gravity / 2 * delta;
+            }
+            else if (isWallRunning && !isGrounded && !WallRunning())
+            {
+                move = transform.forward;
+                velocity.y += gravity * delta;
+            }
+            else
+                velocity.y += gravity * delta;
+
+            controller.Move(move * currentSpeed * delta);
             controller.Move(velocity * delta);
+
         }
+    }
+
+    bool WallRunning()
+    {
+        int layermask = 1 << 9;
+        layermask = ~layermask;
+
+        RaycastHit hit;
+        if (Physics.Raycast(transform.position, transform.right, out hit, wallRunDistance, layermask))
+        {
+            return true;
+        }
+        if (Physics.Raycast(transform.position, -transform.right, out hit, wallRunDistance, layermask))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
+    IEnumerator JumpControl()
+    {
+        isJumping = true;
+        yield return new WaitForSeconds(isJumpingTimer);
+        isJumping = false;
+    }
+
+    IEnumerator WallRunControl()
+    {
+        Debug.Log("Wall Run Triggered");
+        isWallRunning = true;
+        yield return new WaitForSeconds(isJumpingTimer);
+        isWallRunning = false;
+        Debug.Log("Wall Run Ended");
     }
 
     public void ResetRotation() { transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.y, 0)); }
