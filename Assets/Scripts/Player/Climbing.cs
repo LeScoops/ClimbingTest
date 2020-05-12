@@ -48,6 +48,13 @@ public class Climbing : MonoBehaviour
         if (!playerStamina.ApplyStaminaChangeIfAvailable(-baseStaminaDrainRate * delta))
             DetachFromWall();
 
+        if (Input.GetButtonDown("Jump"))
+        {
+            Debug.Log(helper.forward);
+            DetachFromWall();
+            playerMovementScript.WallJumping();
+        }
+
         if (!inPosition)
         {
             GetInPosition(delta);
@@ -162,6 +169,7 @@ public class Climbing : MonoBehaviour
             return true;
         }
 
+
         origin = origin + (direction * distance2);
         direction = -moveDir;
         DebugLine.singleton.SetLine(origin, origin + direction, 2);
@@ -228,8 +236,12 @@ public class Climbing : MonoBehaviour
     {
         isClimbing = false;
         inPosition = false;
-        //helper.rotation = Quaternion.identity;
         playerMovementScript.isClimbing = false;
-        playerMovementScript.ResetRotation();
+        playerMovementScript.ResetRotation(helper.rotation);
+    }
+
+    public Vector3 GetHelperForward()
+    {
+        return helper.forward;
     }
 }

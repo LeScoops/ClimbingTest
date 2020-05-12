@@ -1114,17 +1114,17 @@ PrefabInstance:
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 6.32
+      value: 3.7
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.25
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 25.94
+      value: 17.2
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
@@ -1166,10 +1166,20 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7848316268689438343, guid: 44618d7601c0068488e33b6f3f81ea94,
+        type: 3}
+      propertyPath: isWallJumpingTimer
+      value: 0.5
+      objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438344, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: glidingSpeed
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 7848316268689438344, guid: 44618d7601c0068488e33b6f3f81ea94,
+        type: 3}
+      propertyPath: baseGlidingSpeed
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438345, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}

@@ -17,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] float wallRunDistance = 5.0f;
     [SerializeField] float isJumpingTimer = 3.0f;
+    [SerializeField] float isWallJumpingTimer = 1.0f;
 
     Climbing playerClimbing;
     Stamina playerStamina;
@@ -27,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     bool isGrounded;
     bool isJumping;
     bool isWallRunning;
+    bool isWallJumping;
     bool isOnWall;
     bool isGliding;
     bool isSprinting;
@@ -93,9 +95,14 @@ public class PlayerMovement : MonoBehaviour
 
         // Gliding
         if (Input.GetKeyDown(KeyCode.E) && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
+        {
+            playerGliding.ResetGlidingSpeed();
             isGliding = true;
+        }
 
         Vector3 move = transform.right * x + transform.forward * z;
+
+ 
 
         if (isGliding)
         {
@@ -122,6 +129,10 @@ public class PlayerMovement : MonoBehaviour
                 move = transform.forward;
                 velocity.y += gravity * delta;
             }
+            else if (isWallJumping)
+            {
+
+            }
             else
                 velocity.y += gravity * delta;
 
@@ -137,14 +148,9 @@ public class PlayerMovement : MonoBehaviour
         layermask = ~layermask;
 
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.right, out hit, wallRunDistance, layermask))
-        {
+        if (Physics.Raycast(transform.position, transform.right, out hit, wallRunDistance, layermask) || 
+            Physics.Raycast(transform.position, -transform.right, out hit, wallRunDistance, layermask))
             return true;
-        }
-        if (Physics.Raycast(transform.position, -transform.right, out hit, wallRunDistance, layermask))
-        {
-            return true;
-        }
 
         return false;
     }
@@ -158,13 +164,28 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator WallRunControl()
     {
-        Debug.Log("Wall Run Triggered");
         isWallRunning = true;
         yield return new WaitForSeconds(isJumpingTimer);
         isWallRunning = false;
-        Debug.Log("Wall Run Ended");
     }
 
-    public void ResetRotation() { transform.rotation = Quaternion.Euler(new Vector3(0, transform.rotation.y, 0)); }
+    IEnumerator WallJumpControl()
+    {
+        
+        velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
+        Vector3 move = -playerClimbing.GetHelperForward();
+        controller.Move(move * delta);
+        isWallJumping = true;
+
+        yield return new WaitForSeconds(isWallJumpingTimer);
+        isWallJumping = false;
+    }
+
+    public void WallJumping()
+    {
+        StartCoroutine(WallJumpControl());
+    }
+
+    public void ResetRotation(Quaternion helperRotation) { transform.rotation = new Quaternion(0, transform.rotation.y, 0, helperRotation.w); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
 }
