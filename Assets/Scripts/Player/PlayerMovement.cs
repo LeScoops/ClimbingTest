@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
     Stamina playerStamina;
     Gliding playerGliding;
     Vector3 velocity;
+    Vector3 move;
+    Vector3 helperForward;
     float delta;
     float currentSpeed;
     bool isGrounded;
@@ -100,7 +102,7 @@ public class PlayerMovement : MonoBehaviour
             isGliding = true;
         }
 
-        Vector3 move = transform.right * x + transform.forward * z;
+        move = transform.right * x + transform.forward * z;
 
  
 
@@ -131,7 +133,8 @@ public class PlayerMovement : MonoBehaviour
             }
             else if (isWallJumping)
             {
-
+                //move = -helperForward;
+                velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
             }
             else
                 velocity.y += gravity * delta;
@@ -171,13 +174,17 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator WallJumpControl()
     {
-        
-        velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
-        Vector3 move = -playerClimbing.GetHelperForward();
-        controller.Move(move * delta);
         isWallJumping = true;
+        //Vector3 baseHelper = playerClimbing.GetHelperForward() / 10;
+        //helperForward = playerClimbing.GetHelperForward();
 
+        //for (int i = 1; i < 10; i++)
+        //{
+        //    helperForward = baseHelper * (10 / i) ;
+        //    Debug.Log(helperForward);
+        //}
         yield return new WaitForSeconds(isWallJumpingTimer);
+            
         isWallJumping = false;
     }
 

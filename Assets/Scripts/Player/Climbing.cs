@@ -23,6 +23,7 @@ public class Climbing : MonoBehaviour
     float vert;
     Vector3 startPosition;
     Vector3 targetPosition;
+    Vector3 lastHelperForward;
     Quaternion startRotation;
     Quaternion targetRotation;
     Transform helper;
@@ -50,7 +51,6 @@ public class Climbing : MonoBehaviour
 
         if (Input.GetButtonDown("Jump"))
         {
-            Debug.Log(helper.forward);
             DetachFromWall();
             playerMovementScript.WallJumping();
         }
@@ -234,14 +234,13 @@ public class Climbing : MonoBehaviour
 
     public void DetachFromWall()
     {
+        SetLastHelperForward(helper.forward);
         isClimbing = false;
         inPosition = false;
         playerMovementScript.isClimbing = false;
         playerMovementScript.ResetRotation(helper.rotation);
     }
 
-    public Vector3 GetHelperForward()
-    {
-        return helper.forward;
-    }
+    public Vector3 GetHelperForward() { return lastHelperForward;}
+    void SetLastHelperForward(Vector3 forward) { lastHelperForward = forward; }
 }
