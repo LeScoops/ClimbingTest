@@ -175,16 +175,7 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator WallJumpControl()
     {
         isWallJumping = true;
-        //Vector3 baseHelper = playerClimbing.GetHelperForward() / 10;
-        //helperForward = playerClimbing.GetHelperForward();
-
-        //for (int i = 1; i < 10; i++)
-        //{
-        //    helperForward = baseHelper * (10 / i) ;
-        //    Debug.Log(helperForward);
-        //}
-        yield return new WaitForSeconds(isWallJumpingTimer);
-            
+        yield return new WaitForSeconds(isWallJumpingTimer);            
         isWallJumping = false;
     }
 

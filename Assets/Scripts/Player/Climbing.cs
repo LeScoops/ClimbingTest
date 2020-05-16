@@ -30,8 +30,11 @@ public class Climbing : MonoBehaviour
     PlayerMovement playerMovementScript;
     Stamina playerStamina;
 
+    int layermask = 1 << 9;
+
     private void Start()
     {
+        layermask = ~layermask;
         playerMovementScript = GetComponent<PlayerMovement>();
         playerStamina = GetComponent<Stamina>();
         Init();
@@ -151,11 +154,10 @@ public class Climbing : MonoBehaviour
         DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
         RaycastHit hit;
 
-        //if (Physics.Raycast(origin, direction, out hit, distance))
-        //{
-        //    return false;
-        //}
-
+        if (Physics.Raycast(origin, direction, out hit, distance, layermask))
+        {
+            return false;
+        }
 
         // Raycast forward towards the wall
         origin += moveDir * distance;
@@ -238,7 +240,8 @@ public class Climbing : MonoBehaviour
         isClimbing = false;
         inPosition = false;
         playerMovementScript.isClimbing = false;
-        playerMovementScript.ResetRotation(helper.rotation);
+        //playerMovementScript.ResetRotation(helper.rotation);
+        playerMovementScript.ResetRotation(Quaternion.Euler(lastHelperForward));
     }
 
     public Vector3 GetHelperForward() { return lastHelperForward;}
