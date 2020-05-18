@@ -156,6 +156,18 @@ public class Climbing : MonoBehaviour
 
         if (Physics.Raycast(origin, direction, out hit, distance, layermask))
         {
+            //if (hit.normal.y < -0.8f)
+            //{
+            //    Debug.Log("Something Above " + hit.normal);
+            //    return false;
+            //}
+
+            if (hit.normal.x > 0.9f || hit.normal.x < -0.9f || hit.normal.z > 0.9f || hit.normal.z < -0.9f)
+            {
+                helper.position = PosWithOffset(origin, hit.point);
+                helper.rotation = Quaternion.LookRotation(-hit.normal);
+                return true;
+            }
             return false;
         }
 
