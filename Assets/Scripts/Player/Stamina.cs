@@ -15,7 +15,7 @@ public class Stamina : MonoBehaviour
         UpdateText();
     }
 
-    public void SetBaseStamina(float changeAmount)
+    public void SetBaseStamina(int changeAmount)
     {
         baseStamina += changeAmount;
         ResetStamina();

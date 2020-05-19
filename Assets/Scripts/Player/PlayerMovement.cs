@@ -10,6 +10,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform groundCheck;
     [SerializeField] float baseSpeed = 12.0f;
     [SerializeField] float sprintModifier = 2.0f;
+    [SerializeField] float sprintingStaminaRequirement = -7.5f;
     [SerializeField] float jumpHeight = 3.0f;
     [SerializeField] float groundDistance = 0.4f;
     [SerializeField] float gravity = -9.81f;
@@ -65,7 +66,7 @@ public class PlayerMovement : MonoBehaviour
                     isGliding = false;
             }
 
-            if (isGrounded)
+            if (isGrounded && !isSprinting)
                 playerStamina.RechargeStamina(staminaRechargeRate * delta);
 
             if (isGliding && Input.GetKeyDown(KeyCode.E))
@@ -121,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
         xMovement = Input.GetAxis("Horizontal");
         zMovement = Input.GetAxis("Vertical");
 
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetKey(KeyCode.LeftShift) && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
             isSprinting = true;
         else
             isSprinting = false;
