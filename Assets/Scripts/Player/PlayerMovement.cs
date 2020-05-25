@@ -59,6 +59,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
+            //isClimbing = playerClimbing.CheckForClimb();
             if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || (!isGrounded && isGliding))
             {
                 isClimbing = playerClimbing.CheckForClimb();

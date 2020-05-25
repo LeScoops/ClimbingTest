@@ -128,6 +128,9 @@ public class Climbing : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(origin, dir, out hit, 5, layermask))
         {
+            Debug.Log(hit.collider.name + ". Normal: " + hit.normal.y);
+            if (hit.normal.y > 0.8f)
+                return false;
             helper.transform.position = PosWithOffset(origin, hit.point);
             playerMovementScript.ResetCurrentSpeed();
             InitForClimb(hit);
@@ -155,13 +158,7 @@ public class Climbing : MonoBehaviour
         RaycastHit hit;
 
         if (Physics.Raycast(origin, direction, out hit, distance, layermask))
-        {
-            //if (hit.normal.y < -0.8f)
-            //{
-            //    Debug.Log("Something Above " + hit.normal);
-            //    return false;
-            //}
-
+        { 
             if (hit.normal.x > 0.9f || hit.normal.x < -0.9f || hit.normal.z > 0.9f || hit.normal.z < -0.9f)
             {
                 helper.position = PosWithOffset(origin, hit.point);
