@@ -5,6 +5,8 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public bool isClimbing;
+
+    [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
@@ -92,6 +94,10 @@ public class PlayerMovement : MonoBehaviour
         else
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta);
 
+        anim.SetFloat("xMovement", xMovement);
+        anim.SetFloat("zMovement", zMovement);
+        anim.SetBool("isGliding", isGliding);
+
         move = transform.right * xMovement + transform.forward * zMovement;
 
         if (isGliding)
@@ -122,6 +128,11 @@ public class PlayerMovement : MonoBehaviour
     {
         xMovement = Input.GetAxis("Horizontal");
         zMovement = Input.GetAxis("Vertical");
+
+        if (xMovement > 0.1f || xMovement < -0.1f || zMovement > 0.1f || zMovement < -0.1f)
+            anim.SetBool("isMoving", true);
+        else
+            anim.SetBool("isMoving", false);
 
         if (Input.GetKey(KeyCode.LeftShift) && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
             isSprinting = true;
@@ -161,6 +172,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator JumpControl()
     {
+        anim.SetTrigger("isJumping");
         isJumping = true;
         velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
         yield return new WaitForSeconds(isJumpingTimer);

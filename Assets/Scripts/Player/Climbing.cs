@@ -128,7 +128,6 @@ public class Climbing : MonoBehaviour
         RaycastHit hit;
         if (Physics.Raycast(origin, dir, out hit, 5, layermask))
         {
-            Debug.Log(hit.collider.name + ". Normal: " + hit.normal.y);
             if (hit.normal.y > 0.8f)
                 return false;
             helper.transform.position = PosWithOffset(origin, hit.point);

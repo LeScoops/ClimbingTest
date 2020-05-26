@@ -141,7 +141,7 @@ PrefabInstance:
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 47.2
+      value: 39.33
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
@@ -151,22 +151,22 @@ PrefabInstance:
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0
+      value: 0.996974
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalRotation.z
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 1
+      value: 0.077736825
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
@@ -181,13 +181,18 @@ PrefabInstance:
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
-      value: 0
+      value: 171.08301
       objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438340, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7848316268689438343, guid: 44618d7601c0068488e33b6f3f81ea94,
+        type: 3}
+      propertyPath: anim
+      value: 
+      objectReference: {fileID: 350918879}
     - target: {fileID: 7848316268689438345, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: staminaText
@@ -271,6 +276,31 @@ Terrain:
   m_GroupingID: 0
   m_RenderingLayerMask: 1
   m_AllowAutoConnect: 1
+--- !u!1 &350918877 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 8296172669075553638, guid: 44618d7601c0068488e33b6f3f81ea94,
+    type: 3}
+  m_PrefabInstance: {fileID: 79577896}
+  m_PrefabAsset: {fileID: 0}
+--- !u!95 &350918879
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 350918877}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: efff04a5bd32b0045bd34e4d679069d9, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &360254390
 GameObject:
   m_ObjectHideFlags: 0
