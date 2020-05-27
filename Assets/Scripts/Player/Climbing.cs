@@ -248,7 +248,6 @@ public class Climbing : MonoBehaviour
         isClimbing = false;
         inPosition = false;
         playerMovementScript.isClimbing = false;
-        //playerMovementScript.ResetRotation(helper.rotation);
         playerMovementScript.ResetRotation(Quaternion.Euler(lastHelperForward));
     }
 

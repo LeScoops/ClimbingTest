@@ -18,7 +18,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float staminaRechargeRate = 1.0f;
     [SerializeField] float wallRunDistance = 5.0f;
-    [SerializeField] float isJumpingTimer = 3.0f;
+    [SerializeField] float isJumpingTimer = 1.5f;
     [SerializeField] float isWallJumpingTimer = 1.0f;
 
     Climbing playerClimbing;
@@ -36,9 +36,9 @@ public class PlayerMovement : MonoBehaviour
     bool isJumping;
     bool isWallRunning;
     bool isWallJumping;
-    bool isOnWall;
     bool isGliding;
     bool isSprinting;
+    bool isFalling;
 
     private void Start()
     {
@@ -61,7 +61,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            //isClimbing = playerClimbing.CheckForClimb();
             if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || (!isGrounded && isGliding))
             {
                 isClimbing = playerClimbing.CheckForClimb();
@@ -84,6 +83,8 @@ public class PlayerMovement : MonoBehaviour
 
     private void Movement()
     {
+        AnimationController();
+
         if (isGrounded && velocity.y < 0)
             ResetDownwardVelocity();
 
@@ -93,10 +94,6 @@ public class PlayerMovement : MonoBehaviour
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
         else
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta);
-
-        anim.SetFloat("xMovement", xMovement);
-        anim.SetFloat("zMovement", zMovement);
-        anim.SetBool("isGliding", isGliding);
 
         move = transform.right * xMovement + transform.forward * zMovement;
 
@@ -124,15 +121,29 @@ public class PlayerMovement : MonoBehaviour
         controller.Move(velocity * delta);
     }
 
-    private void Inputs()
+    private void AnimationController()
     {
-        xMovement = Input.GetAxis("Horizontal");
-        zMovement = Input.GetAxis("Vertical");
+        anim.SetFloat("xMovement", xMovement);
+        anim.SetFloat("zMovement", zMovement);
 
         if (xMovement > 0.1f || xMovement < -0.1f || zMovement > 0.1f || zMovement < -0.1f)
             anim.SetBool("isMoving", true);
         else
             anim.SetBool("isMoving", false);
+
+        anim.SetBool("isGliding", isGliding);
+        anim.SetBool("isClimbing", isClimbing);
+
+        if (!isGliding && !isGrounded && !isWallRunning && !isJumping)
+            anim.SetBool("isFalling", true);
+        else
+            anim.SetBool("isFalling", false);
+    }
+
+    private void Inputs()
+    {
+        xMovement = Input.GetAxis("Horizontal");
+        zMovement = Input.GetAxis("Vertical");
 
         if (Input.GetKey(KeyCode.LeftShift) && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
             isSprinting = true;
