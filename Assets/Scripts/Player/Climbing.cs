@@ -21,6 +21,7 @@ public class Climbing : MonoBehaviour
     float t;
     float horiz;
     float vert;
+    Animator anim;
     Vector3 startPosition;
     Vector3 targetPosition;
     Vector3 lastHelperForward;
@@ -37,6 +38,7 @@ public class Climbing : MonoBehaviour
         layermask = ~layermask;
         playerMovementScript = GetComponent<PlayerMovement>();
         playerStamina = GetComponent<Stamina>();
+        anim = playerMovementScript.GetAnim();
         Init();
     }
 
@@ -114,6 +116,7 @@ public class Climbing : MonoBehaviour
             if (!playerStamina.ApplyStaminaChangeIfAvailable(-staminaDrainRate * delta))
                 DetachFromWall();
 
+            anim.SetTrigger("ClimbMovement");
             LookForGround();
         }
     }

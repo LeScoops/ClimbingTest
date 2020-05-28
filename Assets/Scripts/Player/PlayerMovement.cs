@@ -208,4 +208,5 @@ public class PlayerMovement : MonoBehaviour
     public void ResetRotation(Quaternion helperRotation) { transform.rotation = new Quaternion(0, transform.rotation.y, 0, helperRotation.w); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
     private void ResetDownwardVelocity() { velocity.y = -2.0f; }
+    public Animator GetAnim() { return anim; }
 }
