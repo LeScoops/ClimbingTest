@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public bool isClimbing;
+    public bool isTreeClimbing;
 
     [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
@@ -51,7 +52,6 @@ public class PlayerMovement : MonoBehaviour
     {
         delta = Time.deltaTime;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-
         if (isClimbing)
         {
             playerClimbing.Tick(delta);

@@ -7,7 +7,6 @@ public class Climbing : MonoBehaviour
     public bool isClimbing;
     [SerializeField] float positionOffset = 1.0f;
     [SerializeField] float offsetFromWall = 0.3f;
-    [SerializeField] float climbSpeedMultiplier = 0.2f;
     [SerializeField] float climbingSpeed = 3.0f;
     [SerializeField] float rotateSpeed = 5.0f;
     [SerializeField] float rayTowardsMoveDir = 1.0f;
@@ -30,6 +29,10 @@ public class Climbing : MonoBehaviour
     Transform helper;
     PlayerMovement playerMovementScript;
     Stamina playerStamina;
+
+    Vector3 footIKXandZPos;
+    float IKWeight = 1.0f;
+    //Transform rightFootIKPos;
 
     int layermask = 1 << 9;
 
@@ -230,6 +233,8 @@ public class Climbing : MonoBehaviour
         Vector3 direction = origin - target;
         direction.Normalize();
         Vector3 offset = direction * offsetFromWall;
+
+        footIKXandZPos = new Vector3(offset.x, offset.y, offset.z);
         return target + offset;
     }
 
@@ -243,6 +248,12 @@ public class Climbing : MonoBehaviour
         {
             DetachFromWall();
         }
+    }
+
+    private void OnAnimatorIK(int layerIndex)
+    {
+        anim.SetIKPosition(AvatarIKGoal.LeftFoot, footIKXandZPos);
+        anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, IKWeight);
     }
 
     public void DetachFromWall()

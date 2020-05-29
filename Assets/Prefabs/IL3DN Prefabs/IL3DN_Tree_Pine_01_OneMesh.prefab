@@ -175,7 +175,7 @@ GameObject:
   - component: {fileID: 9158691013865614540}
   m_Layer: 8
   m_Name: IL3DN_Tree_Pine_01_OneMesh
-  m_TagString: Untagged
+  m_TagString: Tree
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

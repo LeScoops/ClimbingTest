@@ -292,6 +292,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isClimbing: 0
+  isTreeClimbing: 0
+  anim: {fileID: 0}
   controller: {fileID: 7848316268689438341}
   groundMask:
     serializedVersion: 2
@@ -322,7 +324,6 @@ MonoBehaviour:
   isClimbing: 0
   positionOffset: 1
   offsetFromWall: 0.75
-  climbSpeedMultiplier: 0.2
   climbingSpeed: 20
   rotateSpeed: 5
   rayTowardsMoveDir: 1
