@@ -11,10 +11,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] CharacterController controller;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
-    [SerializeField] float baseSpeed = 12.0f;
+    [SerializeField] float baseSpeed = 8.0f;
     [SerializeField] float sprintModifier = 2.0f;
     [SerializeField] float sprintingStaminaRequirement = -7.5f;
-    [SerializeField] float jumpHeight = 3.0f;
+    [SerializeField] float jumpHeight = 2.0f;
     [SerializeField] float groundDistance = 0.4f;
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float staminaRechargeRate = 1.0f;
@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || (!isGrounded && isGliding))
+            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || (Input.GetKeyDown(KeyCode.C) && !isGrounded && isGliding))
             {
                 isClimbing = playerClimbing.CheckForClimb();
                 if (isClimbing)
@@ -93,7 +93,7 @@ public class PlayerMovement : MonoBehaviour
         if (isSprinting && isGrounded)
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
         else
-            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta);
+            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta * 2);
 
         move = transform.right * xMovement + transform.forward * zMovement;
 

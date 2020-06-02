@@ -299,15 +299,15 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   groundCheck: {fileID: 7848316267629588141}
-  baseSpeed: 12
+  baseSpeed: 8
   sprintModifier: 2
   sprintingStaminaRequirement: -7.5
-  jumpHeight: 3
+  jumpHeight: 2
   groundDistance: 0.4
   gravity: -19.62
   staminaRechargeRate: 20
   wallRunDistance: 5
-  isJumpingTimer: 3
+  isJumpingTimer: 1.5
   isWallJumpingTimer: 1
 --- !u!114 &7848316268689438342
 MonoBehaviour:

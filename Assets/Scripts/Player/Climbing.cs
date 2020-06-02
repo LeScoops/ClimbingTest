@@ -9,6 +9,7 @@ public class Climbing : MonoBehaviour
     [SerializeField] float offsetFromWall = 0.3f;
     [SerializeField] float climbingSpeed = 3.0f;
     [SerializeField] float rotateSpeed = 5.0f;
+    [SerializeField] float runAroundDistance = 0.5f;
     [SerializeField] float rayTowardsMoveDir = 1.0f;
     [SerializeField] float rayForwardTowardsWall = 1.0f;
     [SerializeField] float baseStaminaDrainRate = 0.4f;
@@ -132,7 +133,9 @@ public class Climbing : MonoBehaviour
         origin.y += 1.4f;
         Vector3 dir = transform.forward;
         RaycastHit hit;
-        if (Physics.Raycast(origin, dir, out hit, 5, layermask))
+        if (Physics.Raycast(origin, dir, out hit, 5, layermask) &&
+            Physics.Raycast(origin + (transform.right * runAroundDistance), dir, 5, layermask) &&
+            Physics.Raycast(origin - (transform.right * runAroundDistance), dir, 5, layermask))
         {
             if (hit.normal.y > 0.8f)
                 return false;
