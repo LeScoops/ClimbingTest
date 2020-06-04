@@ -918,6 +918,11 @@ PrefabInstance:
       propertyPath: anim
       value: 
       objectReference: {fileID: 350918879}
+    - target: {fileID: 7848316268689438343, guid: 44618d7601c0068488e33b6f3f81ea94,
+        type: 3}
+      propertyPath: baseSpeed
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 7848316268689438345, guid: 44618d7601c0068488e33b6f3f81ea94,
         type: 3}
       propertyPath: staminaText
