@@ -14,6 +14,7 @@ public class Climbing : MonoBehaviour
     [SerializeField] float rayForwardTowardsWall = 1.0f;
     [SerializeField] float baseStaminaDrainRate = 0.4f;
     [SerializeField] float staminaDrainRate = 10.0f;
+    [SerializeField] float wallJumpStaminaUsage = 20.0f;
 
     bool inPosition;
     bool isLerping;
@@ -30,17 +31,15 @@ public class Climbing : MonoBehaviour
     Transform helper;
     PlayerMovement playerMovementScript;
     Stamina playerStamina;
+    LayerMask layerMask;
 
     Vector3 footIKXandZPos;
     float IKWeight = 1.0f;
-    //Transform rightFootIKPos;
-
-    int layermask = 1 << 9;
 
     private void Start()
     {
-        layermask = ~layermask;
         playerMovementScript = GetComponent<PlayerMovement>();
+        layerMask = playerMovementScript.GetLayerMask();
         playerStamina = GetComponent<Stamina>();
         anim = playerMovementScript.GetAnim();
         Init();
@@ -58,7 +57,7 @@ public class Climbing : MonoBehaviour
         if (!playerStamina.ApplyStaminaChangeIfAvailable(-baseStaminaDrainRate * delta))
             DetachFromWall();
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump") && playerStamina.ApplyStaminaChangeIfAvailable(-wallJumpStaminaUsage))
         {
             DetachFromWall();
             playerMovementScript.WallJumping();
@@ -80,19 +79,9 @@ public class Climbing : MonoBehaviour
             Vector3 v = helper.up * vert;
             Vector3 moveDir = (h + v).normalized;
 
-            if (isMid)
-            {
-                if (moveDir == Vector3.zero)
-                    return;
-            }
-            else
-            {
-                bool canMove = CanMove(moveDir);
-                if (!canMove || moveDir == Vector3.zero)
-                    return;
-            }
-
-            isMid = !isMid;
+            bool canMove = CanMove(moveDir);
+            if (!canMove || moveDir == Vector3.zero)
+                return;
 
             t = 0;
             isLerping = true;
@@ -127,15 +116,11 @@ public class Climbing : MonoBehaviour
 
     public bool CheckForClimb()
     {
-        int layermask = 1 << 9;
-        layermask = ~layermask;
         Vector3 origin = transform.position;
         origin.y += 1.4f;
         Vector3 dir = transform.forward;
         RaycastHit hit;
-        if (Physics.Raycast(origin, dir, out hit, 5, layermask) &&
-            Physics.Raycast(origin + (transform.right * runAroundDistance), dir, 5, layermask) &&
-            Physics.Raycast(origin - (transform.right * runAroundDistance), dir, 5, layermask))
+        if (Physics.Raycast(origin, dir, out hit, 5, layerMask))
         {
             if (hit.normal.y > 0.8f)
                 return false;
@@ -165,7 +150,7 @@ public class Climbing : MonoBehaviour
         DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
         RaycastHit hit;
 
-        if (Physics.Raycast(origin, direction, out hit, distance, layermask))
+        if (Physics.Raycast(origin, direction, out hit, distance, layerMask))
         { 
             if (hit.normal.x > 0.9f || hit.normal.x < -0.9f || hit.normal.z > 0.9f || hit.normal.z < -0.9f)
             {
@@ -248,9 +233,7 @@ public class Climbing : MonoBehaviour
         Vector3 direction = Vector3.down;
 
         if (Physics.Raycast(origin, direction, out hit, 1.2f))
-        {
             DetachFromWall();
-        }
     }
 
     private void OnAnimatorIK(int layerIndex)

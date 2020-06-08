@@ -5,7 +5,6 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     public bool isClimbing;
-    public bool isTreeClimbing;
 
     [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
@@ -18,15 +17,16 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float groundDistance = 0.4f;
     [SerializeField] float gravity = -9.81f;
     [SerializeField] float staminaRechargeRate = 1.0f;
-    [SerializeField] float wallRunDistance = 5.0f;
+    [SerializeField] float wallRunDistance = 3.0f;
     [SerializeField] float isJumpingTimer = 1.5f;
-    [SerializeField] float isWallJumpingTimer = 1.0f;
+    [SerializeField] float isWallJumpingTimer = 0.25f;
+    [SerializeField] float glidingTimer = 0.5f;
 
     Climbing playerClimbing;
     Gliding playerGliding;
     Stamina playerStamina;
     Vector3 velocity;
-    Vector3 move;
+    Vector3 movementVector;
     Vector3 helperForward;
 
     float delta;
@@ -38,6 +38,7 @@ public class PlayerMovement : MonoBehaviour
     bool isWallRunning;
     bool isWallJumping;
     bool isGliding;
+    bool glidingTriggered;
     bool isSprinting;
     bool isFalling;
 
@@ -52,73 +53,73 @@ public class PlayerMovement : MonoBehaviour
     {
         delta = Time.deltaTime;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        if (isClimbing)
-        {
-            playerClimbing.Tick(delta);
 
-            if (Input.GetKeyDown(KeyCode.C))
-                playerClimbing.DetachFromWall();
-        }
+        if (isClimbing)
+            ClimbingController();
         else
         {
-            if (Input.GetKeyDown(KeyCode.C) || currentSpeed > baseSpeed * 1.25f || (Input.GetKeyDown(KeyCode.C) && !isGrounded && isGliding))
-            {
-                isClimbing = playerClimbing.CheckForClimb();
-                if (isClimbing)
-                    isGliding = false;
-            }
-
-            if (isGrounded && !isSprinting)
-                playerStamina.RechargeStamina(staminaRechargeRate * delta);
-
-            if (isGliding && Input.GetKeyDown(KeyCode.E))
-            {
-                isGliding = false;
-                return;
-            }
-
-            Movement();
+            Inputs();
+            AnimationController();
+            if (isGliding)
+                GlidingController();
+            else
+                GroundMovement();
         }
     }
 
-    private void Movement()
+    private void GroundMovement()
     {
-        AnimationController();
-
         if (isGrounded && velocity.y < 0)
             ResetDownwardVelocity();
 
-        Inputs();
+        if (isGrounded && !isSprinting)
+            playerStamina.RechargeStamina(staminaRechargeRate * delta);
 
-        if (isSprinting && isGrounded)
-            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
-        else
-            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta * 2);
-
-        move = transform.right * xMovement + transform.forward * zMovement;
-
-        if (isGliding)
-        {
-            if (playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta) && !isGrounded)
-                playerGliding.GlidingMovement(controller, delta);
-            else
-                isGliding = false;
-
-            controller.Move(move * currentSpeed * delta);
-            return;
-        }
+        SprintController();
 
         if (isWallRunning && WallRunning())
             velocity.y += gravity / 2 * delta;
-        else if (isWallRunning && !isGrounded && !WallRunning())
-            velocity.y += gravity * delta;
-        else if (isWallJumping)
-            velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
         else
             velocity.y += gravity * delta;
 
-        controller.Move(move * currentSpeed * delta);
+        if (isWallJumping)
+            velocity.y = Mathf.Sqrt(jumpHeight * -2.0f * gravity);
+
+        controller.Move(movementVector * currentSpeed * delta);
         controller.Move(velocity * delta);
+    }
+
+    private void ClimbingController()
+    {
+        playerClimbing.Tick(delta);
+
+        if (Input.GetKeyDown(KeyCode.C))
+            playerClimbing.DetachFromWall();
+    }
+
+
+    private void GlidingController()
+    {
+        if (Input.GetKeyDown(KeyCode.E) && !glidingTriggered)
+        {
+            isGliding = false;
+            return;
+        }
+
+        if (playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta) && !isGrounded)
+            playerGliding.GlidingMovement(controller, delta);
+        else
+            isGliding = false;
+
+        controller.Move(movementVector * currentSpeed * delta);
+    }
+
+    private void SprintController()
+    {
+        if (isSprinting && isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
+            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
+        else
+            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta * 2);
     }
 
     private void AnimationController()
@@ -144,8 +145,10 @@ public class PlayerMovement : MonoBehaviour
     {
         xMovement = Input.GetAxis("Horizontal");
         zMovement = Input.GetAxis("Vertical");
+        movementVector = transform.right * xMovement + transform.forward * zMovement;
 
-        if (Input.GetKey(KeyCode.LeftShift) && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
+        // Sprinting
+        if (Input.GetKey(KeyCode.LeftShift))
             isSprinting = true;
         else
             isSprinting = false;
@@ -160,22 +163,28 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(WallRunControl());
 
         // Gliding
-        if (Input.GetKeyDown(KeyCode.E) && !isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
+        if (Input.GetKeyDown(KeyCode.E) && !isGrounded && !isGliding && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
         {
             ResetDownwardVelocity();
             playerGliding.ResetGlidingSpeed();
             isGliding = true;
+            StartCoroutine(GlidingControl());
+        }
+
+        // Climbing
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            isClimbing = playerClimbing.CheckForClimb();
+            if (isClimbing)
+                isGliding = false;
         }
     }
 
     bool WallRunning()
     {
-        int layermask = 1 << 9;
-        layermask = ~layermask;
-
         RaycastHit hit;
-        if (Physics.Raycast(transform.position, transform.right, out hit, wallRunDistance, layermask) || 
-            Physics.Raycast(transform.position, -transform.right, out hit, wallRunDistance, layermask))
+        if (Physics.Raycast(transform.position, transform.right, out hit, wallRunDistance, groundMask) || 
+            Physics.Raycast(transform.position, -transform.right, out hit, wallRunDistance, groundMask))
             return true;
 
         return false;
@@ -204,9 +213,17 @@ public class PlayerMovement : MonoBehaviour
         isWallJumping = false;
     }
 
+    IEnumerator GlidingControl()
+    {
+        glidingTriggered = true;
+        yield return new WaitForSeconds(glidingTimer);
+        glidingTriggered = false;
+    }
+
     public void WallJumping() { StartCoroutine(WallJumpControl()); }
     public void ResetRotation(Quaternion helperRotation) { transform.rotation = new Quaternion(0, transform.rotation.y, 0, helperRotation.w); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
+    public LayerMask GetLayerMask() { return groundMask; }
     private void ResetDownwardVelocity() { velocity.y = -2.0f; }
     public Animator GetAnim() { return anim; }
 }

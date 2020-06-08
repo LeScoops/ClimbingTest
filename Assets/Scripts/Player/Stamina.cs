@@ -30,10 +30,12 @@ public class Stamina : MonoBehaviour
     // Returns true if there is stamina available and can use. Returns false if no stamina left. 
     public bool ApplyStaminaChangeIfAvailable(float changeAmount)
     {
-        currentStamina += changeAmount;
-        UpdateText();
-        if (currentStamina > 0)
+        if (currentStamina + changeAmount > 0)
+        {
+            currentStamina += changeAmount;
+            UpdateText();
             return true;
+        }
         else
             return false;
     }

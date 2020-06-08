@@ -388,7 +388,8 @@ MonoBehaviour:
   staminaRechargeRate: 20
   wallRunDistance: 5
   isJumpingTimer: 1.5
-  isWallJumpingTimer: 1
+  isWallJumpingTimer: 0.25
+  glidingTimer: 0.5
 --- !u!114 &7848316268689438342
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -696,7 +697,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0
+      value: -0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
@@ -706,12 +707,12 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: -0.1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.06975647
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
@@ -726,7 +727,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
       propertyPath: m_LocalRotation.w
-      value: 0.9975641
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
@@ -736,7 +737,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: -8
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
