@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
+    [SerializeField] MouseLook mouseLook;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] float baseSpeed = 8.0f;
@@ -16,6 +17,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float jumpHeight = 2.0f;
     [SerializeField] float groundDistance = 0.4f;
     [SerializeField] float gravity = -9.81f;
+    [SerializeField] float groundDownwardForce = -5.0f;
     [SerializeField] float staminaRechargeRate = 1.0f;
     [SerializeField] float wallRunDistance = 3.0f;
     [SerializeField] float isJumpingTimer = 1.5f;
@@ -69,7 +71,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundMovement()
     {
-        if (isGrounded && velocity.y < 0)
+        if (isGrounded && velocity.y < groundDownwardForce)
             ResetDownwardVelocity();
 
         if (isGrounded && !isSprinting)
@@ -91,6 +93,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void ClimbingController()
     {
+        mouseLook.SetIsClimbing(true);
         playerClimbing.Tick(delta);
 
         if (Input.GetKeyDown(KeyCode.C))
@@ -221,9 +224,13 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void WallJumping() { StartCoroutine(WallJumpControl()); }
-    public void ResetRotation(Quaternion helperRotation) { transform.rotation = new Quaternion(0, transform.rotation.y, 0, helperRotation.w); }
+    public void ResetRotation(Vector2 cameraRotation)
+    {
+        transform.rotation = Quaternion.Euler(0, transform.localEulerAngles.y, 0);
+        Debug.Log("Player Movement: " + transform.localRotation.eulerAngles);
+    }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
     public LayerMask GetLayerMask() { return groundMask; }
-    private void ResetDownwardVelocity() { velocity.y = -2.0f; }
+    private void ResetDownwardVelocity() { velocity.y = groundDownwardForce; }
     public Animator GetAnim() { return anim; }
 }

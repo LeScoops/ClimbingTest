@@ -372,7 +372,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   isClimbing: 0
-  isTreeClimbing: 0
   anim: {fileID: 350918879}
   controller: {fileID: 7848316268689438341}
   groundMask:
@@ -386,7 +385,7 @@ MonoBehaviour:
   groundDistance: 0.4
   gravity: -19.62
   staminaRechargeRate: 20
-  wallRunDistance: 5
+  wallRunDistance: 3
   isJumpingTimer: 1.5
   isWallJumpingTimer: 0.25
   glidingTimer: 0.5
@@ -405,13 +404,13 @@ MonoBehaviour:
   isClimbing: 0
   positionOffset: 1
   offsetFromWall: 0.75
-  climbingSpeed: 20
+  climbingSpeed: 5
   rotateSpeed: 5
-  runAroundDistance: 0.5
   rayTowardsMoveDir: 0.5
   rayForwardTowardsWall: 1
   baseStaminaDrainRate: 0.4
-  staminaDrainRate: 20
+  staminaDrainRate: 10
+  wallJumpStaminaUsage: 20
 --- !u!114 &7848316268689438344
 MonoBehaviour:
   m_ObjectHideFlags: 0

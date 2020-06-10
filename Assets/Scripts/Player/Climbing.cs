@@ -5,11 +5,11 @@ using UnityEngine;
 public class Climbing : MonoBehaviour
 {
     public bool isClimbing;
+    [SerializeField] MouseLook mouseLook;
     [SerializeField] float positionOffset = 1.0f;
     [SerializeField] float offsetFromWall = 0.3f;
-    [SerializeField] float climbingSpeed = 3.0f;
+    [SerializeField] float climbingSpeed = 5.0f;
     [SerializeField] float rotateSpeed = 5.0f;
-    [SerializeField] float runAroundDistance = 0.5f;
     [SerializeField] float rayTowardsMoveDir = 1.0f;
     [SerializeField] float rayForwardTowardsWall = 1.0f;
     [SerializeField] float baseStaminaDrainRate = 0.4f;
@@ -18,23 +18,17 @@ public class Climbing : MonoBehaviour
 
     bool inPosition;
     bool isLerping;
-    bool isMid;
     float t;
-    float horiz;
-    float vert;
+    float horizontalInput;
+    float verticalInput;
     Animator anim;
     Vector3 startPosition;
     Vector3 targetPosition;
     Vector3 lastHelperForward;
-    Quaternion startRotation;
-    Quaternion targetRotation;
-    Transform helper;
+    Transform climbingHelper;
     PlayerMovement playerMovementScript;
     Stamina playerStamina;
     LayerMask layerMask;
-
-    Vector3 footIKXandZPos;
-    float IKWeight = 1.0f;
 
     private void Start()
     {
@@ -47,8 +41,8 @@ public class Climbing : MonoBehaviour
 
     void Init()
     {
-        helper = new GameObject().transform;
-        helper.name = "Climbing Helper";
+        climbingHelper = new GameObject().transform;
+        climbingHelper.name = "Climbing Helper";
         CheckForClimb();
     }
 
@@ -71,26 +65,25 @@ public class Climbing : MonoBehaviour
 
         if (!isLerping)
         {
-            horiz = Input.GetAxis("Horizontal");
-            vert = Input.GetAxis("Vertical");
-            float m = Mathf.Abs(horiz) + Mathf.Abs(vert);
+            horizontalInput = Input.GetAxis("Horizontal");
+            verticalInput = Input.GetAxis("Vertical");
 
-            Vector3 h = helper.right * horiz;
-            Vector3 v = helper.up * vert;
-            Vector3 moveDir = (h + v).normalized;
+            Vector3 horizontalMovement = climbingHelper.right * horizontalInput;
+            Vector3 verticalMovement = climbingHelper.up * verticalInput;
+            Vector3 moveDirection = (horizontalMovement + verticalMovement).normalized;
 
-            bool canMove = CanMove(moveDir);
-            if (!canMove || moveDir == Vector3.zero)
+            bool canMove = CanMove(moveDirection);
+            if (!canMove || moveDirection == Vector3.zero)
                 return;
 
             t = 0;
             isLerping = true;
             startPosition = transform.position;
-            Vector3 tp = helper.position - transform.position;
-            float d = Vector3.Distance(helper.position, startPosition) / 2;
+            Vector3 tp = climbingHelper.position - transform.position;
+            float d = Vector3.Distance(climbingHelper.position, startPosition) / 2;
             tp *= positionOffset;
             tp += transform.position;
-            targetPosition = (isMid) ? tp : helper.position;
+            targetPosition = tp;
         }
         else
         {
@@ -101,30 +94,29 @@ public class Climbing : MonoBehaviour
                 isLerping = false;
             }
 
-            // cp is climb position
-            Vector3 cp = Vector3.Lerp(startPosition, targetPosition, t);
-            transform.position = cp;
-            transform.rotation = Quaternion.Slerp(transform.rotation, helper.rotation, delta * rotateSpeed);
+            Vector3 climbingPosition = Vector3.Lerp(startPosition, targetPosition, t);
+            transform.position = climbingPosition;
+            transform.rotation = Quaternion.Slerp(transform.rotation, climbingHelper.rotation, delta * rotateSpeed);
 
             if (!playerStamina.ApplyStaminaChangeIfAvailable(-staminaDrainRate * delta))
                 DetachFromWall();
 
             anim.SetTrigger("ClimbMovement");
-            LookForGround();
+            CheckForGround();
         }
     }
 
     public bool CheckForClimb()
     {
-        Vector3 origin = transform.position;
-        origin.y += 1.4f;
-        Vector3 dir = transform.forward;
+        Vector3 originPoint = transform.position;
+        originPoint.y += 1.4f;
+        Vector3 direction = transform.forward;
         RaycastHit hit;
-        if (Physics.Raycast(origin, dir, out hit, 5, layerMask))
+        if (Physics.Raycast(originPoint, direction, out hit, 5, layerMask))
         {
             if (hit.normal.y > 0.8f)
                 return false;
-            helper.transform.position = PosWithOffset(origin, hit.point);
+            climbingHelper.transform.position = PosWithOffset(originPoint, hit.point);
             playerMovementScript.ResetCurrentSpeed();
             InitForClimb(hit);
             return true;
@@ -135,7 +127,8 @@ public class Climbing : MonoBehaviour
     void InitForClimb(RaycastHit hit)
     {
         isClimbing = true;
-        helper.transform.rotation = Quaternion.LookRotation(-hit.normal);
+        climbingHelper.transform.rotation = Quaternion.LookRotation(-hit.normal);
+        mouseLook.ResetRotation();
         startPosition = transform.position;
         targetPosition = hit.point + (hit.normal * offsetFromWall);
         t = 0;
@@ -150,52 +143,40 @@ public class Climbing : MonoBehaviour
         DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
         RaycastHit hit;
 
+        // For going around inner corners and objects above
         if (Physics.Raycast(origin, direction, out hit, distance, layerMask))
         { 
             if (hit.normal.x > 0.9f || hit.normal.x < -0.9f || hit.normal.z > 0.9f || hit.normal.z < -0.9f)
             {
-                helper.position = PosWithOffset(origin, hit.point);
-                helper.rotation = Quaternion.LookRotation(-hit.normal);
+                climbingHelper.position = PosWithOffset(origin, hit.point);
+                climbingHelper.rotation = Quaternion.LookRotation(-hit.normal);
                 return true;
             }
             return false;
         }
 
-        // Raycast forward towards the wall
+        // For traversing normal angles
         origin += moveDir * distance;
-        direction = helper.forward;
+        direction = climbingHelper.forward;
         float distance2 = rayForwardTowardsWall;
         DebugLine.singleton.SetLine(origin, origin + (direction * distance2), 1);
         if (Physics.Raycast(origin, direction, out hit, distance2))
         {
-            helper.position = PosWithOffset(origin, hit.point);
-            helper.rotation = Quaternion.LookRotation(-hit.normal);
+            climbingHelper.position = PosWithOffset(origin, hit.point);
+            climbingHelper.rotation = Quaternion.LookRotation(-hit.normal);
+            Debug.Log(climbingHelper.rotation.eulerAngles);
             return true;
         }
 
-
+        // For going around outer corners
         origin = origin + (direction * distance2);
         direction = -moveDir;
         DebugLine.singleton.SetLine(origin, origin + direction, 2);
         if (Physics.Raycast(origin, direction, out hit, rayForwardTowardsWall))
         {
-            helper.position = PosWithOffset(origin, hit.point);
-            helper.rotation = Quaternion.LookRotation(-hit.normal);
+            climbingHelper.position = PosWithOffset(origin, hit.point);
+            climbingHelper.rotation = Quaternion.LookRotation(-hit.normal);
             return true;
-        }
-
-        origin += direction * distance2;
-        direction = -Vector3.up;
-        DebugLine.singleton.SetLine(origin, origin + direction, 3);
-        if (Physics.Raycast(origin, direction, out hit, distance2))
-        {
-            float angle = Vector3.Angle(-helper.forward, hit.normal);
-            if (angle < 40)
-            {
-                helper.position = PosWithOffset(origin, hit.point);
-                helper.rotation = Quaternion.LookRotation(-hit.normal);
-                return true;
-            }
         }
 
         return false;
@@ -210,10 +191,9 @@ public class Climbing : MonoBehaviour
             inPosition = true;
         }
 
-        // tp is short for targetposition
-        Vector3 tp = Vector3.Lerp(startPosition, targetPosition, t);
-        transform.position = tp;
-        transform.rotation = Quaternion.Slerp(transform.rotation, helper.rotation, delta * rotateSpeed);
+        Vector3 targetPositionToMoveTo = Vector3.Lerp(startPosition, targetPosition, t);
+        transform.position = targetPositionToMoveTo;
+        transform.rotation = Quaternion.Slerp(transform.rotation, climbingHelper.rotation, delta * rotateSpeed);
     }
 
     Vector3 PosWithOffset(Vector3 origin, Vector3 target)
@@ -222,11 +202,10 @@ public class Climbing : MonoBehaviour
         direction.Normalize();
         Vector3 offset = direction * offsetFromWall;
 
-        footIKXandZPos = new Vector3(offset.x, offset.y, offset.z);
         return target + offset;
     }
 
-    void LookForGround()
+    void CheckForGround()
     {
         RaycastHit hit;
         Vector3 origin = transform.position;
@@ -236,21 +215,12 @@ public class Climbing : MonoBehaviour
             DetachFromWall();
     }
 
-    private void OnAnimatorIK(int layerIndex)
-    {
-        anim.SetIKPosition(AvatarIKGoal.LeftFoot, footIKXandZPos);
-        anim.SetIKPositionWeight(AvatarIKGoal.LeftFoot, IKWeight);
-    }
-
     public void DetachFromWall()
     {
-        SetLastHelperForward(helper.forward);
         isClimbing = false;
         inPosition = false;
+        mouseLook.SetIsClimbing(false);
         playerMovementScript.isClimbing = false;
-        playerMovementScript.ResetRotation(Quaternion.Euler(lastHelperForward));
+        playerMovementScript.ResetRotation(mouseLook.GetFinalRotation());
     }
-
-    public Vector3 GetHelperForward() { return lastHelperForward;}
-    void SetLastHelperForward(Vector3 forward) { lastHelperForward = forward; }
 }
