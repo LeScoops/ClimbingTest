@@ -8,7 +8,6 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
-    [SerializeField] MouseLook mouseLook;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] float baseSpeed = 8.0f;
@@ -93,7 +92,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void ClimbingController()
     {
-        mouseLook.SetIsClimbing(true);
         playerClimbing.Tick(delta);
 
         if (Input.GetKeyDown(KeyCode.C))
@@ -224,11 +222,7 @@ public class PlayerMovement : MonoBehaviour
     }
 
     public void WallJumping() { StartCoroutine(WallJumpControl()); }
-    public void ResetRotation(Vector2 cameraRotation)
-    {
-        transform.rotation = Quaternion.Euler(0, transform.localEulerAngles.y, 0);
-        Debug.Log("Player Movement: " + transform.localRotation.eulerAngles);
-    }
+    public void ResetRotation(float yRotation) { transform.rotation = Quaternion.Euler(0, yRotation, 0); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
     public LayerMask GetLayerMask() { return groundMask; }
     private void ResetDownwardVelocity() { velocity.y = groundDownwardForce; }

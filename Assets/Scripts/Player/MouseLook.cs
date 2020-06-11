@@ -47,10 +47,4 @@ public class MouseLook : MonoBehaviour
         xRotation = 0.0f;
         yRotation = 0.0f;
     }
-
-    public Vector2 GetFinalRotation()
-    {
-        //Debug.Log("XRot: " + xRotation + ". YRot: " + yRotation);
-        return new Vector2(xRotation, yRotation);
-    }
 }

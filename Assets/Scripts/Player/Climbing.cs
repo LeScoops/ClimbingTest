@@ -21,10 +21,10 @@ public class Climbing : MonoBehaviour
     float t;
     float horizontalInput;
     float verticalInput;
+    float lastHelperRotation;
     Animator anim;
     Vector3 startPosition;
     Vector3 targetPosition;
-    Vector3 lastHelperForward;
     Transform climbingHelper;
     PlayerMovement playerMovementScript;
     Stamina playerStamina;
@@ -116,6 +116,7 @@ public class Climbing : MonoBehaviour
         {
             if (hit.normal.y > 0.8f)
                 return false;
+            mouseLook.SetIsClimbing(true);
             climbingHelper.transform.position = PosWithOffset(originPoint, hit.point);
             playerMovementScript.ResetCurrentSpeed();
             InitForClimb(hit);
@@ -140,7 +141,7 @@ public class Climbing : MonoBehaviour
         Vector3 origin = transform.position;
         float distance = rayTowardsMoveDir;
         Vector3 direction = moveDir;
-        DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
+        //DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
         RaycastHit hit;
 
         // For going around inner corners and objects above
@@ -150,6 +151,7 @@ public class Climbing : MonoBehaviour
             {
                 climbingHelper.position = PosWithOffset(origin, hit.point);
                 climbingHelper.rotation = Quaternion.LookRotation(-hit.normal);
+                lastHelperRotation = climbingHelper.eulerAngles.y;
                 return true;
             }
             return false;
@@ -159,19 +161,19 @@ public class Climbing : MonoBehaviour
         origin += moveDir * distance;
         direction = climbingHelper.forward;
         float distance2 = rayForwardTowardsWall;
-        DebugLine.singleton.SetLine(origin, origin + (direction * distance2), 1);
+        //DebugLine.singleton.SetLine(origin, origin + (direction * distance2), 1);
         if (Physics.Raycast(origin, direction, out hit, distance2))
         {
             climbingHelper.position = PosWithOffset(origin, hit.point);
             climbingHelper.rotation = Quaternion.LookRotation(-hit.normal);
-            Debug.Log(climbingHelper.rotation.eulerAngles);
+            lastHelperRotation = climbingHelper.eulerAngles.y;
             return true;
         }
 
         // For going around outer corners
         origin = origin + (direction * distance2);
         direction = -moveDir;
-        DebugLine.singleton.SetLine(origin, origin + direction, 2);
+        //DebugLine.singleton.SetLine(origin, origin + direction, 2);
         if (Physics.Raycast(origin, direction, out hit, rayForwardTowardsWall))
         {
             climbingHelper.position = PosWithOffset(origin, hit.point);
@@ -221,6 +223,6 @@ public class Climbing : MonoBehaviour
         inPosition = false;
         mouseLook.SetIsClimbing(false);
         playerMovementScript.isClimbing = false;
-        playerMovementScript.ResetRotation(mouseLook.GetFinalRotation());
+        playerMovementScript.ResetRotation(lastHelperRotation);
     }
 }
