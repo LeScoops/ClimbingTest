@@ -43,7 +43,7 @@ public class Climbing : MonoBehaviour
     {
         climbingHelper = new GameObject().transform;
         climbingHelper.name = "Climbing Helper";
-        CheckForClimb();
+        //CheckForClimb();
     }
 
     public void Tick(float delta)
@@ -116,7 +116,6 @@ public class Climbing : MonoBehaviour
         {
             if (hit.normal.y > 0.8f)
                 return false;
-            mouseLook.SetIsClimbing(true);
             climbingHelper.transform.position = PosWithOffset(originPoint, hit.point);
             playerMovementScript.ResetCurrentSpeed();
             InitForClimb(hit);
@@ -128,6 +127,7 @@ public class Climbing : MonoBehaviour
     void InitForClimb(RaycastHit hit)
     {
         isClimbing = true;
+        mouseLook.SetIsClimbing(true);
         climbingHelper.transform.rotation = Quaternion.LookRotation(-hit.normal);
         mouseLook.ResetRotation();
         startPosition = transform.position;
