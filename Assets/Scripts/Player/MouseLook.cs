@@ -6,8 +6,11 @@ public class MouseLook : MonoBehaviour
 {
     [SerializeField] bool isClimbing = false;
     [SerializeField] float mouseSensitivity = 100.0f;
+    [SerializeField] float thirdPersonDistance = -3.0f;
+    [SerializeField] float firstPersonDistance = 0.2f;
     [SerializeField] Transform playerBody;
 
+    bool isFirstPerson = true;
     float xRotation = 0.0f;
     float yRotation = 0.0f;
 
@@ -26,9 +29,14 @@ public class MouseLook : MonoBehaviour
         yRotation += mouseX;
         yRotation = Mathf.Clamp(yRotation, -90.0f, 90.0f);
 
-        if (isClimbing)
+        if (isClimbing && isFirstPerson)
         {
             transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+        }
+        else if (!isFirstPerson)
+        {
+            //transform.localRotation = Quaternion.Euler(0, 0, yRotation);
+            playerBody.Rotate(Vector3.up * mouseX);
         }
         else
         {
@@ -46,5 +54,21 @@ public class MouseLook : MonoBehaviour
     {
         xRotation = 0.0f;
         yRotation = 0.0f;
+        transform.localRotation = Quaternion.Euler(0, 0, 0);
+    }
+
+    public void ToggleCamera()
+    {
+        if (isFirstPerson)
+        {
+            isFirstPerson = false;
+            ResetRotation();
+            transform.localPosition = new Vector3(0, 1.5f, thirdPersonDistance);
+        }
+        else
+        {
+            isFirstPerson = true;
+            transform.localPosition = new Vector3(0, 1.5f, firstPersonDistance);
+        }
     }
 }

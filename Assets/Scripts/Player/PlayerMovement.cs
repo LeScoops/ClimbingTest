@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
+    [SerializeField] MouseLook camera;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] float baseSpeed = 8.0f;
@@ -179,6 +180,10 @@ public class PlayerMovement : MonoBehaviour
             if (isClimbing)
                 isGliding = false;
         }
+
+        // Camera
+        if (Input.GetKeyDown(KeyCode.F))
+            camera.ToggleCamera();
     }
 
     bool WallRunning()

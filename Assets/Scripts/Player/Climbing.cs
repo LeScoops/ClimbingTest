@@ -222,6 +222,7 @@ public class Climbing : MonoBehaviour
         isClimbing = false;
         inPosition = false;
         mouseLook.SetIsClimbing(false);
+        mouseLook.ResetRotation();
         playerMovementScript.isClimbing = false;
         playerMovementScript.ResetRotation(lastHelperRotation);
     }
