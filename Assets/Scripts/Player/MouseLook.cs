@@ -9,14 +9,16 @@ public class MouseLook : MonoBehaviour
     [SerializeField] float thirdPersonDistance = -3.0f;
     [SerializeField] float firstPersonDistance = 0.2f;
     [SerializeField] Transform playerBody;
+    [SerializeField] Transform XGimbal;
 
-    bool isFirstPerson = true;
+    bool isFirstPerson = false;
     float xRotation = 0.0f;
     float yRotation = 0.0f;
 
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        ToggleCamera();
     }
 
     void Update()
@@ -35,7 +37,8 @@ public class MouseLook : MonoBehaviour
         }
         else if (!isFirstPerson)
         {
-            //transform.localRotation = Quaternion.Euler(0, 0, yRotation);
+            yRotation = Mathf.Clamp(yRotation, 0.0f, 90.0f);
+            XGimbal.localRotation = Quaternion.Euler(xRotation, 0, 0);
             playerBody.Rotate(Vector3.up * mouseX);
         }
         else
@@ -54,6 +57,7 @@ public class MouseLook : MonoBehaviour
     {
         xRotation = 0.0f;
         yRotation = 0.0f;
+        XGimbal.localRotation = Quaternion.Euler(0, 0, 0);
         transform.localRotation = Quaternion.Euler(0, 0, 0);
     }
 
@@ -63,12 +67,13 @@ public class MouseLook : MonoBehaviour
         {
             isFirstPerson = false;
             ResetRotation();
-            transform.localPosition = new Vector3(0, 1.5f, thirdPersonDistance);
+            transform.localPosition = new Vector3(0, 0, thirdPersonDistance);
         }
         else
         {
             isFirstPerson = true;
-            transform.localPosition = new Vector3(0, 1.5f, firstPersonDistance);
+            ResetRotation();
+            transform.localPosition = new Vector3(0, 0, firstPersonDistance);
         }
     }
 }

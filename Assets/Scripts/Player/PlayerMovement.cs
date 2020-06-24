@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] MouseLook camera;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
+    [SerializeField] GameObject glider;
     [SerializeField] float baseSpeed = 8.0f;
     [SerializeField] float sprintModifier = 2.0f;
     [SerializeField] float sprintingStaminaRequirement = -7.5f;
@@ -113,6 +114,7 @@ public class PlayerMovement : MonoBehaviour
         else
             isGliding = false;
 
+
         controller.Move(movementVector * currentSpeed * delta);
     }
 
@@ -126,13 +128,14 @@ public class PlayerMovement : MonoBehaviour
 
     private void AnimationController()
     {
-        anim.SetFloat("xMovement", xMovement);
-        anim.SetFloat("zMovement", zMovement);
+        glider.gameObject.SetActive(isGliding);
 
-        if (xMovement > 0.1f || xMovement < -0.1f || zMovement > 0.1f || zMovement < -0.1f)
+        if (zMovement > 0.01f || xMovement > 0.01f)
             anim.SetBool("isMoving", true);
         else
             anim.SetBool("isMoving", false);
+
+        anim.SetBool("isSprinting", isSprinting);
 
         anim.SetBool("isGliding", isGliding);
         anim.SetBool("isClimbing", isClimbing);
