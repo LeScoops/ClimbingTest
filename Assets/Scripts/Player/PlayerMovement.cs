@@ -129,8 +129,10 @@ public class PlayerMovement : MonoBehaviour
     private void AnimationController()
     {
         glider.gameObject.SetActive(isGliding);
+        anim.SetFloat("xMovement", xMovement);
+        anim.SetFloat("zMovement", zMovement);
 
-        if (zMovement > 0.01f || xMovement > 0.01f)
+        if (xMovement > 0.01f || xMovement < -0.01f || zMovement > 0.01f || zMovement < -0.01f)
             anim.SetBool("isMoving", true);
         else
             anim.SetBool("isMoving", false);

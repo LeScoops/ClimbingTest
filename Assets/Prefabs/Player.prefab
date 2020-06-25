@@ -10153,7 +10153,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1520942042
 Transform:
   m_ObjectHideFlags: 0
@@ -10162,8 +10162,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1520942037}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.286, y: 3.201, z: 0.152}
-  m_LocalScale: {x: 0.7633, y: 0.7633, z: 0.30460307}
+  m_LocalPosition: {x: 1.46, y: 2.9, z: 0.152}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.3}
   m_Children:
   - {fileID: 876406433}
   - {fileID: 368287835}
@@ -15896,6 +15896,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 256
   groundCheck: {fileID: 7848316267629588141}
+  glider: {fileID: 0}
   baseSpeed: 6
   sprintModifier: 2
   sprintingStaminaRequirement: -7.5
