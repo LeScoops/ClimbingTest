@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] Animator anim;
     [SerializeField] CharacterController controller;
-    [SerializeField] MouseLook camera;
+    //[SerializeField] MouseLook camera;
     [SerializeField] LayerMask groundMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] GameObject glider;
@@ -185,10 +185,6 @@ public class PlayerMovement : MonoBehaviour
             if (isClimbing)
                 isGliding = false;
         }
-
-        // Camera
-        if (Input.GetKeyDown(KeyCode.F))
-            camera.ToggleCamera();
     }
 
     bool WallRunning()
