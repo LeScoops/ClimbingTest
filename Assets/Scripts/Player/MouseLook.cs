@@ -4,86 +4,62 @@ using UnityEngine;
 
 public class MouseLook : MonoBehaviour
 {
-    [SerializeField] bool isClimbing = false;
-    [SerializeField] float mouseSensitivity = 100.0f;
-    [SerializeField] float thirdPersonDistance = 4.0f;
-    [SerializeField] float firstPersonDistance = 0.2f;
+    [SerializeField] float mouseSensitivity = 75.0f;
+    [SerializeField] float maxCameraDistance = 10.0f;
+    [SerializeField] float minimumCameraDistance = 0.0f;
     [SerializeField] Transform playerBody;
-    [SerializeField] Transform XGimbal;
-    [SerializeField] LayerMask layerMask;
+    [SerializeField] Transform gimbal;
 
-    CameraPerspective cameraPerspective;
-    float zoom;
+    bool isClimbing = false;
+    bool manualCamera = false;
+    float currentDistance;
     float xRotation = 0.0f;
     float yRotation = 0.0f;
 
-    private enum CameraPerspective
-    {
-        FirstPerson,
-        ThirdPerson
-    };
-
     void Start()
     {
-        cameraPerspective = CameraPerspective.FirstPerson;
         Cursor.lockState = CursorLockMode.Locked;
-        ToggleCamera();
     }
 
     void Update()
     {
-        Vector2 mouse = InputController();
+        Vector2 mouse = MouseInput();
 
-        if (isClimbing && cameraPerspective == CameraPerspective.FirstPerson)
-        {
-            transform.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
-        }
-        else if (cameraPerspective == CameraPerspective.ThirdPerson)
-        {
-            ThirdPersonController();
+        SpringArm();
+        gimbal.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
-            xRotation = Mathf.Clamp(xRotation, -30.0f, 80.0f);
-            XGimbal.localRotation = Quaternion.Euler(xRotation, 0, 0);
+        if (!isClimbing && !manualCamera)
             playerBody.Rotate(Vector3.up * mouse.x);
-        }
         else
-        {
-            transform.localRotation = Quaternion.Euler(xRotation, 0, 0);
-            playerBody.Rotate(Vector3.up * mouse.x);
-        }
+            gimbal.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
     }
 
-    private void ThirdPersonController()
+    private void SpringArm()
     {
         RaycastHit hit;
         Vector3 playerHeadPosition = playerBody.transform.position;
         playerHeadPosition.y += 1.7f;
-        Physics.Raycast(playerHeadPosition, transform.position - playerHeadPosition, out hit, thirdPersonDistance);
-        if (hit.collider != null && Mathf.Abs(hit.distance) < thirdPersonDistance && hit.collider.tag != "Player")
+        Physics.Raycast(playerHeadPosition, transform.position - playerHeadPosition, out hit, maxCameraDistance);
+        if (hit.collider != null && Mathf.Abs(hit.distance) < currentDistance && hit.collider.tag != "Player")
             transform.localPosition = new Vector3(0.0f, 0.0f, -Mathf.Abs(hit.distance));
         else
-            transform.localPosition = new Vector3(0.0f, 0.0f, -zoom);
+            transform.localPosition = new Vector3(0.0f, 0.0f, -currentDistance);
     }
 
-    Vector2 InputController()
+    Vector2 MouseInput()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-            ToggleCamera();
-
-        zoom -= Input.GetAxis("Mouse ScrollWheel");
-        zoom = Mathf.Clamp(zoom, firstPersonDistance, thirdPersonDistance);
-        if ((cameraPerspective == CameraPerspective.ThirdPerson && zoom <= firstPersonDistance) ||
-            (cameraPerspective == CameraPerspective.FirstPerson && zoom > firstPersonDistance))
-            ToggleCamera();
-
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
+        manualCamera = Input.GetMouseButton(1);
+
+        currentDistance -= Input.GetAxis("Mouse ScrollWheel");
+        currentDistance = Mathf.Clamp(currentDistance, minimumCameraDistance, maxCameraDistance);
+
         xRotation -= mouseY;
-        xRotation = Mathf.Clamp(xRotation, -90.0f, 90.0f);
+        xRotation = Mathf.Clamp(xRotation, -80.0f, 80.0f);
 
         yRotation += mouseX;
-        yRotation = Mathf.Clamp(yRotation, -90.0f, 90.0f);
 
         return new Vector2(mouseX, mouseY);
     }
@@ -97,25 +73,7 @@ public class MouseLook : MonoBehaviour
     {
         xRotation = 0.0f;
         yRotation = 0.0f;
-        XGimbal.localRotation = Quaternion.Euler(0, 0, 0);
+        gimbal.localRotation = Quaternion.Euler(0, 0, 0);
         transform.localRotation = Quaternion.Euler(0, 0, 0);
-    }
-
-    public void ToggleCamera()
-    {
-        if (cameraPerspective == CameraPerspective.FirstPerson)
-        {
-            cameraPerspective = CameraPerspective.ThirdPerson;
-            zoom = thirdPersonDistance;
-            ResetRotation();
-            transform.localPosition = new Vector3(0, 0, -zoom);
-        }
-        else
-        {
-            cameraPerspective = CameraPerspective.FirstPerson;
-            zoom = firstPersonDistance;
-            ResetRotation();
-            transform.localPosition = new Vector3(0, 0, zoom);
-        }
     }
 }

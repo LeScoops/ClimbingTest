@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 368287836}
   m_Layer: 0
   m_Name: Pegs
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -3393,7 +3393,7 @@ GameObject:
   - component: {fileID: 876406434}
   m_Layer: 0
   m_Name: Pegs
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -6771,7 +6771,7 @@ GameObject:
   - component: {fileID: 1227072902}
   m_Layer: 0
   m_Name: Pegs
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -10149,7 +10149,7 @@ GameObject:
   - component: {fileID: 1520942038}
   m_Layer: 0
   m_Name: Glider
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -11904,7 +11904,7 @@ GameObject:
   - component: {fileID: 2037458838}
   m_Layer: 0
   m_Name: Pegs
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15282,7 +15282,7 @@ GameObject:
   - component: {fileID: 7631819660302178811}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15652,7 +15652,7 @@ GameObject:
   - component: {fileID: 7848316267954123348}
   - component: {fileID: 741589300}
   - component: {fileID: 741589301}
-  m_Layer: 9
+  m_Layer: 0
   m_Name: Camera
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -15736,12 +15736,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ae203dcea606dd44ca894caaa1572ab3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isClimbing: 0
   mouseSensitivity: 100
-  thirdPersonDistance: -3
+  maxCameraDistance: 10
   firstPersonDistance: 0.2
   playerBody: {fileID: 7848316268689438340}
-  XGimbal: {fileID: 8148601508397200745}
+  gimbal: {fileID: 8148601508397200745}
 --- !u!114 &741589300
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15836,7 +15835,7 @@ GameObject:
   - component: {fileID: 1774540078}
   m_Layer: 9
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -15891,12 +15890,11 @@ MonoBehaviour:
   isClimbing: 0
   anim: {fileID: 350918879}
   controller: {fileID: 7848316268689438341}
-  camera: {fileID: 7848316267954123348}
   groundMask:
     serializedVersion: 2
     m_Bits: 256
   groundCheck: {fileID: 7848316267629588141}
-  glider: {fileID: 0}
+  glider: {fileID: 1520942037}
   baseSpeed: 6
   sprintModifier: 2
   sprintingStaminaRequirement: -7.5
