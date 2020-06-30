@@ -26,22 +26,25 @@ public class MouseLook : MonoBehaviour
         Vector2 mouse = MouseInput();
 
         SpringArm();
-        gimbal.localRotation = Quaternion.Euler(xRotation, 0, 0);
 
         if (!isClimbing && !manualCamera)
+        {
             playerBody.Rotate(Vector3.up * mouse.x);
+            gimbal.localRotation = Quaternion.Euler(xRotation, 0, 0);
+        }
         else
+        {
             gimbal.localRotation = Quaternion.Euler(xRotation, yRotation, 0);
+        }
     }
 
     private void SpringArm()
     {
         RaycastHit hit;
-        Vector3 playerHeadPosition = playerBody.transform.position;
-        playerHeadPosition.y += 1.7f;
-        Physics.Raycast(playerHeadPosition, transform.position - playerHeadPosition, out hit, maxCameraDistance);
-        if (hit.collider != null && Mathf.Abs(hit.distance) < currentDistance && hit.collider.tag != "Player")
-            transform.localPosition = new Vector3(0.0f, 0.0f, -Mathf.Abs(hit.distance));
+        Physics.Raycast(gimbal.position, transform.position - gimbal.position, out hit, maxCameraDistance);
+        float absoluteDistance = Mathf.Abs(hit.distance);
+        if (hit.collider != null && absoluteDistance < currentDistance && hit.collider.tag != "Player")
+            transform.localPosition = new Vector3(0.0f, 0.0f, -absoluteDistance);
         else
             transform.localPosition = new Vector3(0.0f, 0.0f, -currentDistance);
     }
@@ -60,6 +63,8 @@ public class MouseLook : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -80.0f, 80.0f);
 
         yRotation += mouseX;
+        if (yRotation > 360.0f) yRotation = -0.0f;
+        else if (yRotation < 0.0f) yRotation = 360.0f;
 
         return new Vector2(mouseX, mouseY);
     }
