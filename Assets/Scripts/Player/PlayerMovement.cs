@@ -7,9 +7,10 @@ public class PlayerMovement : MonoBehaviour
     public bool isClimbing;
 
     [SerializeField] Animator anim;
+    [SerializeField] Transform model;
     [SerializeField] CharacterController controller;
-    //[SerializeField] MouseLook camera;
     [SerializeField] LayerMask groundMask;
+    [SerializeField] LayerMask waterMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] GameObject glider;
     [SerializeField] float baseSpeed = 8.0f;
@@ -27,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
 
     Climbing playerClimbing;
     Gliding playerGliding;
+    Swimming playerSwimming;
     Stamina playerStamina;
     Vector3 velocity;
     Vector3 movementVector;
@@ -41,6 +43,7 @@ public class PlayerMovement : MonoBehaviour
     bool isWallRunning;
     bool isWallJumping;
     bool isGliding;
+    bool isSwimming;
     bool glidingTriggered;
     bool isSprinting;
     bool isFalling;
@@ -48,14 +51,23 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         playerClimbing = GetComponent<Climbing>();
-        playerStamina = GetComponent<Stamina>();
         playerGliding = GetComponent<Gliding>();
+        playerSwimming = GetComponent<Swimming>();
+        playerStamina = GetComponent<Stamina>();
+    }
+
+    void OnDrawGizmos()
+    {
+        //Debug.Log("GC: " + groundCheck.position);
+        Gizmos.color = Color.red;
+        Gizmos.DrawSphere(groundCheck.position, groundDistance * 2);
     }
 
     void Update()
     {
         delta = Time.deltaTime;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+        isSwimming = Physics.CheckSphere(groundCheck.position, groundDistance * 2, waterMask);
 
         if (isClimbing)
             ClimbingController();
@@ -65,6 +77,8 @@ public class PlayerMovement : MonoBehaviour
             AnimationController();
             if (isGliding)
                 GlidingController();
+            else if (isSwimming)
+                SwimmingController();
             else
                 GroundMovement();
         }
@@ -72,6 +86,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void GroundMovement()
     {
+        anim.transform.localPosition = new Vector3(0, 0, 0);
         if (isGrounded && velocity.y < groundDownwardForce)
             ResetDownwardVelocity();
 
@@ -114,8 +129,17 @@ public class PlayerMovement : MonoBehaviour
         else
             isGliding = false;
 
-
+        anim.SetBool("isGliding", isGliding);
         controller.Move(movementVector * currentSpeed * delta);
+    }
+
+    private void SwimmingController()
+    {
+        if (playerStamina.ApplyStaminaChangeIfAvailable(playerSwimming.GetStaminaRequirement() * delta))
+        {
+            anim.transform.localPosition = new Vector3(0, -1.5f, 0);
+            playerSwimming.SwimmingController(controller, movementVector, delta);
+        }
     }
 
     private void SprintController()
@@ -137,12 +161,12 @@ public class PlayerMovement : MonoBehaviour
         else
             anim.SetBool("isMoving", false);
 
+        anim.SetBool("isGrounded", isGrounded);
         anim.SetBool("isSprinting", isSprinting);
-
-        anim.SetBool("isGliding", isGliding);
+        anim.SetBool("isSwimming", isSwimming);
         anim.SetBool("isClimbing", isClimbing);
 
-        if (!isGliding && !isGrounded && !isWallRunning && !isJumping)
+        if (!isGliding && !isGrounded && !isWallRunning && !isJumping && !isSwimming)
             anim.SetBool("isFalling", true);
         else
             anim.SetBool("isFalling", false);
@@ -230,7 +254,7 @@ public class PlayerMovement : MonoBehaviour
     public void WallJumping() { StartCoroutine(WallJumpControl()); }
     public void ResetRotation(float yRotation) { transform.rotation = Quaternion.Euler(0, yRotation, 0); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
-    public LayerMask GetLayerMask() { return groundMask; }
+    public LayerMask GetGroundMask() { return groundMask; }
     private void ResetDownwardVelocity() { velocity.y = groundDownwardForce; }
     public Animator GetAnim() { return anim; }
 }

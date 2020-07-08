@@ -7,7 +7,7 @@ public class MouseLook : MonoBehaviour
     [SerializeField] float mouseSensitivity = 75.0f;
     [SerializeField] float maxCameraDistance = 10.0f;
     [SerializeField] float minimumCameraDistance = 0.0f;
-    [SerializeField] Transform playerBody;
+    [SerializeField] Transform player;
     [SerializeField] Transform gimbal;
 
     bool isClimbing = false;
@@ -29,7 +29,7 @@ public class MouseLook : MonoBehaviour
 
         if (!isClimbing && !manualCamera)
         {
-            playerBody.Rotate(Vector3.up * mouse.x);
+            player.Rotate(Vector3.up * mouse.x);
             gimbal.localRotation = Quaternion.Euler(xRotation, 0, 0);
         }
         else
@@ -69,10 +69,7 @@ public class MouseLook : MonoBehaviour
         return new Vector2(mouseX, mouseY);
     }
 
-    public void SetIsClimbing(bool isClimbing)
-    {
-        this.isClimbing = isClimbing;
-    }
+    public void SetIsClimbing(bool isClimbing) { this.isClimbing = isClimbing; }
 
     public void ResetRotation()
     {

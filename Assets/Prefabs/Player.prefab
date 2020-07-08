@@ -15600,13 +15600,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4423433942815866175}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1.7, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.7000008, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 7848316267954123347}
-  m_Father: {fileID: 7848316268689438340}
-  m_RootOrder: 0
+  m_Father: {fileID: 5006512734915497845}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7848316267629588138
 GameObject:
@@ -15636,7 +15636,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 7848316268689438340}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7848316267954123344
 GameObject:
@@ -15738,8 +15738,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mouseSensitivity: 100
   maxCameraDistance: 10
-  firstPersonDistance: 0.2
-  playerBody: {fileID: 7848316268689438340}
+  minimumCameraDistance: 0
+  player: {fileID: 0}
   gimbal: {fileID: 8148601508397200745}
 --- !u!114 &741589300
 MonoBehaviour:
@@ -15831,6 +15831,7 @@ GameObject:
   - component: {fileID: 7848316268689438343}
   - component: {fileID: 7848316268689438342}
   - component: {fileID: 7848316268689438344}
+  - component: {fileID: 8153907031916036246}
   - component: {fileID: 7848316268689438345}
   - component: {fileID: 1774540078}
   m_Layer: 9
@@ -15851,7 +15852,6 @@ Transform:
   m_LocalPosition: {x: 0, y: 34.9, z: 31.5}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 8148601508397200745}
   - {fileID: 7848316267629588141}
   - {fileID: 5006512734915497845}
   m_Father: {fileID: 0}
@@ -15889,10 +15889,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isClimbing: 0
   anim: {fileID: 350918879}
+  model: {fileID: 0}
   controller: {fileID: 7848316268689438341}
   groundMask:
     serializedVersion: 2
     m_Bits: 256
+  waterMask:
+    serializedVersion: 2
+    m_Bits: 0
   groundCheck: {fileID: 7848316267629588141}
   glider: {fileID: 1520942037}
   baseSpeed: 6
@@ -15942,10 +15946,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5aab343e8b5a41b4cb7342bfcb07d6f3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  glidingStaminaRequirement: -5
+  staminaRequirement: -5
   glidingGravity: -4
-  baseGlidingSpeed: 2
-  maxGlidingSpeed: 10
+  defaultSpeed: 2
+  maxSpeed: 10
+--- !u!114 &8153907031916036246
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7848316268689438338}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e9d41716966f7cb49aa818238f466753, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  staminaRequirement: -10
+  defaultSpeed: 8
+  sprintModifier: 2
 --- !u!114 &7848316268689438345
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -16244,7 +16263,7 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}
       propertyPath: m_RootOrder
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: ee13f369e45939141b62db480cd4ca27,
         type: 3}

@@ -33,7 +33,7 @@ public class Climbing : MonoBehaviour
     private void Start()
     {
         playerMovementScript = GetComponent<PlayerMovement>();
-        layerMask = playerMovementScript.GetLayerMask();
+        layerMask = playerMovementScript.GetGroundMask();
         playerStamina = GetComponent<Stamina>();
         anim = playerMovementScript.GetAnim();
         Init();
