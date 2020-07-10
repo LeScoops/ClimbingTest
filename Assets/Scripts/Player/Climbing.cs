@@ -13,7 +13,7 @@ public class Climbing : MonoBehaviour
     [SerializeField] float rayTowardsMoveDir = 1.0f;
     [SerializeField] float rayForwardTowardsWall = 1.0f;
     [SerializeField] float baseStaminaDrainRate = 0.4f;
-    [SerializeField] float staminaDrainRate = 10.0f;
+    [SerializeField] float climbingMovementStaminaDrainRate = 7.0f;
     [SerializeField] float wallJumpStaminaUsage = 20.0f;
 
     bool inPosition;
@@ -43,7 +43,6 @@ public class Climbing : MonoBehaviour
     {
         climbingHelper = new GameObject().transform;
         climbingHelper.name = "Climbing Helper";
-        //CheckForClimb();
     }
 
     public void Tick(float delta)
@@ -98,7 +97,7 @@ public class Climbing : MonoBehaviour
             transform.position = climbingPosition;
             transform.rotation = Quaternion.Slerp(transform.rotation, climbingHelper.rotation, delta * rotateSpeed);
 
-            if (!playerStamina.ApplyStaminaChangeIfAvailable(-staminaDrainRate * delta))
+            if (!playerStamina.ApplyStaminaChangeIfAvailable(-climbingMovementStaminaDrainRate * delta))
                 DetachFromWall();
 
             anim.SetTrigger("ClimbMovement");

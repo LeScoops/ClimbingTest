@@ -28,8 +28,9 @@ public class PlayerMovement : MonoBehaviour
 
     Climbing playerClimbing;
     Gliding playerGliding;
-    Swimming playerSwimming;
+    Spawning playerSpawning;
     Stamina playerStamina;
+    Swimming playerSwimming;
     Vector3 velocity;
     Vector3 movementVector;
     Vector3 helperForward;
@@ -54,11 +55,12 @@ public class PlayerMovement : MonoBehaviour
         playerGliding = GetComponent<Gliding>();
         playerSwimming = GetComponent<Swimming>();
         playerStamina = GetComponent<Stamina>();
+        playerSpawning = FindObjectOfType<Spawning>();
+        transform.position = playerSpawning.GetSpawnLocation().position;
     }
 
     void OnDrawGizmos()
     {
-        //Debug.Log("GC: " + groundCheck.position);
         Gizmos.color = Color.red;
         Gizmos.DrawSphere(groundCheck.position, groundDistance * 2);
     }
@@ -67,7 +69,7 @@ public class PlayerMovement : MonoBehaviour
     {
         delta = Time.deltaTime;
         isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        isSwimming = Physics.CheckSphere(groundCheck.position, groundDistance * 2, waterMask);
+        isSwimming = Physics.CheckSphere(groundCheck.position, groundDistance, waterMask);
 
         if (isClimbing)
             ClimbingController();
@@ -129,7 +131,6 @@ public class PlayerMovement : MonoBehaviour
         else
             isGliding = false;
 
-        anim.SetBool("isGliding", isGliding);
         controller.Move(movementVector * currentSpeed * delta);
     }
 
@@ -140,6 +141,8 @@ public class PlayerMovement : MonoBehaviour
             anim.transform.localPosition = new Vector3(0, -1.5f, 0);
             playerSwimming.SwimmingController(controller, movementVector, delta);
         }
+        else
+            Death();
     }
 
     private void SprintController()
@@ -161,6 +164,7 @@ public class PlayerMovement : MonoBehaviour
         else
             anim.SetBool("isMoving", false);
 
+        anim.SetBool("isGliding", isGliding);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetBool("isSprinting", isSprinting);
         anim.SetBool("isSwimming", isSwimming);
@@ -219,6 +223,11 @@ public class PlayerMovement : MonoBehaviour
             return true;
 
         return false;
+    }
+
+    private void Death()
+    {
+        transform.position = playerSpawning.GetSpawnLocation().position;
     }
 
     IEnumerator JumpControl()

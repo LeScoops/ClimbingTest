@@ -49,5 +49,5 @@ public class Stamina : MonoBehaviour
         UpdateText();
     }
 
-    void UpdateText() { staminaText.text = string.Format("Stamina: {0:#.00}", currentStamina); }
+    void UpdateText() { staminaText.text = string.Format("Stamina: {0:#}", currentStamina); }
 }

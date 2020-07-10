@@ -473,7 +473,7 @@ MonoBehaviour:
     While
     In The Air:
 
-    E - Begin/End Gliding'
+    E - Toggle Gliding'
 --- !u!222 &464249609
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1051,3 +1051,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e3c92eea029dce846938c1c76c6b5d7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sceneToLoad: 
