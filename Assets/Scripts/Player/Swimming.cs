@@ -4,26 +4,38 @@ using UnityEngine;
 
 public class Swimming : MonoBehaviour
 {
-    [SerializeField] float staminaRequirement = -10.0f;
+    [SerializeField] float defaultStaminaRequirement = -10.0f;
+    [SerializeField] float sprintStaminaRequirement = -20.2f;
     [SerializeField] float defaultSpeed = 5.0f;
-    [SerializeField] float sprintModifier = 2.0f;
+    [SerializeField] float sprintSpeed = 10.0f;
+    [SerializeField] string animatorBool = "isSwimming";
     float currentSpeed = 5.0f;
 
-    public void SwimmingController(CharacterController controller, Vector3 movement, float delta)
+    public bool SwimmingController(CharacterController controller, Vector3 movement, bool isSprinting = false, Stamina staminaScript = null, Animator anim = null)
     {
-        currentSpeed = Mathf.Lerp(currentSpeed, SwimSpeed(), delta);
+        float delta = Time.deltaTime;
+        if (staminaScript != null && 
+            isSprinting? !staminaScript.ApplyStaminaChangeIfAvailable(sprintStaminaRequirement * delta):
+            !staminaScript.ApplyStaminaChangeIfAvailable(defaultStaminaRequirement * delta))
+        {
+            if (anim != null) ResetSwimming(anim);
+            return false;
+        }
+
+        float swimSpeed = defaultSpeed;
+        if (isSprinting)
+            swimSpeed = sprintSpeed;
+
+        currentSpeed = Mathf.Lerp(currentSpeed, swimSpeed, delta);
         Vector3 swimmingMovement = movement * currentSpeed;
         controller.Move(swimmingMovement * delta);
+
+        if (anim != null) anim.SetBool(animatorBool, true);
+        return true;
     }
 
-    float SwimSpeed()
+    public void ResetSwimming(Animator anim)
     {
-        float swimSpeed = defaultSpeed;
-        if (Input.GetKey(KeyCode.LeftShift))
-            swimSpeed *= sprintModifier;
-        return swimSpeed;
+        anim.SetBool(animatorBool, false);
     }
-
-    public float GetStaminaRequirement() { return staminaRequirement; }
-    public void ResetGlidingSpeed() { currentSpeed = defaultSpeed; }
 }

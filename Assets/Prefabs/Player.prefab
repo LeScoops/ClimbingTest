@@ -15887,7 +15887,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5a7e48aff69ae214d90ade73eab7b1da, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  isClimbing: 0
   anim: {fileID: 350918879}
   model: {fileID: 0}
   controller: {fileID: 7848316268689438341}
@@ -15932,7 +15931,7 @@ MonoBehaviour:
   rayTowardsMoveDir: 0.5
   rayForwardTowardsWall: 1
   baseStaminaDrainRate: 0.4
-  staminaDrainRate: 10
+  climbingMovementStaminaDrainRate: 7
   wallJumpStaminaUsage: 20
 --- !u!114 &7848316268689438344
 MonoBehaviour:
@@ -15962,9 +15961,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9d41716966f7cb49aa818238f466753, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  staminaRequirement: -10
-  defaultSpeed: 8
-  sprintModifier: 2
+  defaultStaminaRequirement: -10
+  sprintStaminaRequirement: -20.2
+  defaultSpeed: 5
+  sprintSpeed: 10
 --- !u!114 &7848316268689438345
 MonoBehaviour:
   m_ObjectHideFlags: 0

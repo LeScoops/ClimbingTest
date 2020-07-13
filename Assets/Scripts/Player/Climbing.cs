@@ -15,6 +15,7 @@ public class Climbing : MonoBehaviour
     [SerializeField] float baseStaminaDrainRate = 0.4f;
     [SerializeField] float climbingMovementStaminaDrainRate = 7.0f;
     [SerializeField] float wallJumpStaminaUsage = 20.0f;
+    [SerializeField] string animatorBool = "isClimbing";
 
     bool inPosition;
     bool isLerping;
@@ -27,15 +28,11 @@ public class Climbing : MonoBehaviour
     Vector3 targetPosition;
     Transform climbingHelper;
     PlayerMovement playerMovementScript;
-    Stamina playerStamina;
-    LayerMask layerMask;
+    LayerMask groundMask;
 
     private void Start()
     {
         playerMovementScript = GetComponent<PlayerMovement>();
-        layerMask = playerMovementScript.GetGroundMask();
-        playerStamina = GetComponent<Stamina>();
-        anim = playerMovementScript.GetAnim();
         Init();
     }
 
@@ -45,12 +42,15 @@ public class Climbing : MonoBehaviour
         climbingHelper.name = "Climbing Helper";
     }
 
-    public void Tick(float delta)
+    public void ClimbingMovement(Vector2 Movement, LayerMask givenGroundMask, Stamina playerStamina = null, Animator animGiven = null)
     {
-        if (!playerStamina.ApplyStaminaChangeIfAvailable(-baseStaminaDrainRate * delta))
+        float delta = Time.deltaTime;
+        groundMask = givenGroundMask;
+        if (animGiven != null) { anim = animGiven; animGiven.SetBool(animatorBool, true); }
+        if (playerStamina != null && !playerStamina.ApplyStaminaChangeIfAvailable(-baseStaminaDrainRate * delta))
             DetachFromWall();
 
-        if (Input.GetButtonDown("Jump") && playerStamina.ApplyStaminaChangeIfAvailable(-wallJumpStaminaUsage))
+        if (Input.GetButtonDown("Jump") && playerStamina != null && playerStamina.ApplyStaminaChangeIfAvailable(-wallJumpStaminaUsage))
         {
             DetachFromWall();
             playerMovementScript.WallJumping();
@@ -64,8 +64,8 @@ public class Climbing : MonoBehaviour
 
         if (!isLerping)
         {
-            horizontalInput = Input.GetAxis("Horizontal");
-            verticalInput = Input.GetAxis("Vertical");
+            horizontalInput = Movement.x;
+            verticalInput = Movement.y;
 
             Vector3 horizontalMovement = climbingHelper.right * horizontalInput;
             Vector3 verticalMovement = climbingHelper.up * verticalInput;
@@ -97,10 +97,10 @@ public class Climbing : MonoBehaviour
             transform.position = climbingPosition;
             transform.rotation = Quaternion.Slerp(transform.rotation, climbingHelper.rotation, delta * rotateSpeed);
 
-            if (!playerStamina.ApplyStaminaChangeIfAvailable(-climbingMovementStaminaDrainRate * delta))
+            if (playerStamina != null && !playerStamina.ApplyStaminaChangeIfAvailable(-climbingMovementStaminaDrainRate * delta))
                 DetachFromWall();
 
-            anim.SetTrigger("ClimbMovement");
+            if (anim != null) { anim.SetTrigger("ClimbMovement"); }
             CheckForGround();
         }
     }
@@ -111,7 +111,7 @@ public class Climbing : MonoBehaviour
         originPoint.y += 1.4f;
         Vector3 direction = transform.forward;
         RaycastHit hit;
-        if (Physics.Raycast(originPoint, direction, out hit, 5, layerMask))
+        if (Physics.Raycast(originPoint, direction, out hit, 5, groundMask))
         {
             if (hit.normal.y > 0.8f)
                 return false;
@@ -140,11 +140,10 @@ public class Climbing : MonoBehaviour
         Vector3 origin = transform.position;
         float distance = rayTowardsMoveDir;
         Vector3 direction = moveDir;
-        //DebugLine.singleton.SetLine(origin, origin + (direction * distance), 0);
         RaycastHit hit;
 
         // For going around inner corners and objects above
-        if (Physics.Raycast(origin, direction, out hit, distance, layerMask))
+        if (Physics.Raycast(origin, direction, out hit, distance, groundMask))
         { 
             if (hit.normal.x > 0.9f || hit.normal.x < -0.9f || hit.normal.z > 0.9f || hit.normal.z < -0.9f)
             {
@@ -160,7 +159,6 @@ public class Climbing : MonoBehaviour
         origin += moveDir * distance;
         direction = climbingHelper.forward;
         float distance2 = rayForwardTowardsWall;
-        //DebugLine.singleton.SetLine(origin, origin + (direction * distance2), 1);
         if (Physics.Raycast(origin, direction, out hit, distance2))
         {
             climbingHelper.position = PosWithOffset(origin, hit.point);
@@ -172,7 +170,6 @@ public class Climbing : MonoBehaviour
         // For going around outer corners
         origin = origin + (direction * distance2);
         direction = -moveDir;
-        //DebugLine.singleton.SetLine(origin, origin + direction, 2);
         if (Physics.Raycast(origin, direction, out hit, rayForwardTowardsWall))
         {
             climbingHelper.position = PosWithOffset(origin, hit.point);
@@ -216,13 +213,19 @@ public class Climbing : MonoBehaviour
             DetachFromWall();
     }
 
+    public void ResetClimbing()
+    {
+        anim.SetBool(animatorBool, false);
+    }
+
     public void DetachFromWall()
     {
         isClimbing = false;
         inPosition = false;
+        ResetClimbing();
         mouseLook.SetIsClimbing(false);
         mouseLook.ResetRotation();
-        playerMovementScript.isClimbing = false;
+        playerMovementScript.SetState(PlayerMovement.State.Base);
         playerMovementScript.ResetRotation(lastHelperRotation);
     }
 }

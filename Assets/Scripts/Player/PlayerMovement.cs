@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public bool isClimbing;
-
     [SerializeField] Animator anim;
     [SerializeField] Transform model;
     [SerializeField] CharacterController controller;
@@ -13,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] LayerMask waterMask;
     [SerializeField] Transform groundCheck;
     [SerializeField] GameObject glider;
-    [SerializeField] float baseSpeed = 8.0f;
+    [SerializeField] float baseSpeed = 6.0f;
     [SerializeField] float sprintModifier = 2.0f;
     [SerializeField] float sprintingStaminaRequirement = -7.5f;
     [SerializeField] float jumpHeight = 2.0f;
@@ -43,11 +41,17 @@ public class PlayerMovement : MonoBehaviour
     bool isJumping;
     bool isWallRunning;
     bool isWallJumping;
-    bool isGliding;
-    bool isSwimming;
-    bool glidingTriggered;
     bool isSprinting;
-    bool isFalling;
+
+    public enum State
+    {
+        Base,
+        Swimming,
+        Gliding,
+        Climbing
+    };
+
+    State state;
 
     private void Start()
     {
@@ -59,35 +63,40 @@ public class PlayerMovement : MonoBehaviour
         transform.position = playerSpawning.GetSpawnLocation().position;
     }
 
-    void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawSphere(groundCheck.position, groundDistance * 2);
-    }
-
     void Update()
     {
         delta = Time.deltaTime;
-        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
-        isSwimming = Physics.CheckSphere(groundCheck.position, groundDistance, waterMask);
+        Inputs();
+        AnimationController();
 
-        if (isClimbing)
-            ClimbingController();
-        else
+        switch (state)
         {
-            Inputs();
-            AnimationController();
-            if (isGliding)
-                GlidingController();
-            else if (isSwimming)
+            case State.Climbing:
+                ClimbingController();
+                break;
+            case State.Swimming:
                 SwimmingController();
-            else
+                break;
+            case State.Gliding:
+                GlidingController();
+                break;
+            case State.Base:
                 GroundMovement();
+                break;
         }
+    }
+
+    private void GroundCheck()
+    {
+        if (isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask))
+            state = State.Base;
+        else if (Physics.CheckSphere(groundCheck.position, groundDistance, waterMask))
+            state = State.Swimming;
     }
 
     private void GroundMovement()
     {
+        GroundCheck();
         anim.transform.localPosition = new Vector3(0, 0, 0);
         if (isGrounded && velocity.y < groundDownwardForce)
             ResetDownwardVelocity();
@@ -111,36 +120,22 @@ public class PlayerMovement : MonoBehaviour
 
     private void ClimbingController()
     {
-        playerClimbing.Tick(delta);
-
-        if (Input.GetKeyDown(KeyCode.C))
-            playerClimbing.DetachFromWall();
+        Vector2 Movement = new Vector2(xMovement, zMovement);
+        playerClimbing.ClimbingMovement(Movement, groundMask, playerStamina, anim);
     }
-
 
     private void GlidingController()
     {
-        if (Input.GetKeyDown(KeyCode.E) && !glidingTriggered)
-        {
-            isGliding = false;
-            return;
-        }
-
-        if (playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta) && !isGrounded)
-            playerGliding.GlidingMovement(controller, delta);
-        else
-            isGliding = false;
-
-        controller.Move(movementVector * currentSpeed * delta);
+        GroundCheck();
+        if (!playerGliding.GlidingMovement(controller, movementVector, playerStamina, anim, glider) && !isGrounded)
+            state = State.Base;
     }
 
     private void SwimmingController()
     {
-        if (playerStamina.ApplyStaminaChangeIfAvailable(playerSwimming.GetStaminaRequirement() * delta))
-        {
+        GroundCheck();
+        if (playerSwimming.SwimmingController(controller, movementVector, isSprinting, playerStamina, anim))
             anim.transform.localPosition = new Vector3(0, -1.5f, 0);
-            playerSwimming.SwimmingController(controller, movementVector, delta);
-        }
         else
             Death();
     }
@@ -155,7 +150,12 @@ public class PlayerMovement : MonoBehaviour
 
     private void AnimationController()
     {
-        glider.gameObject.SetActive(isGliding);
+        if (state != State.Gliding)
+            playerGliding.ResetGliding(anim, glider);
+
+        if(state != State.Swimming)
+            playerSwimming.ResetSwimming(anim);
+
         anim.SetFloat("xMovement", xMovement);
         anim.SetFloat("zMovement", zMovement);
 
@@ -164,13 +164,10 @@ public class PlayerMovement : MonoBehaviour
         else
             anim.SetBool("isMoving", false);
 
-        anim.SetBool("isGliding", isGliding);
         anim.SetBool("isGrounded", isGrounded);
         anim.SetBool("isSprinting", isSprinting);
-        anim.SetBool("isSwimming", isSwimming);
-        anim.SetBool("isClimbing", isClimbing);
 
-        if (!isGliding && !isGrounded && !isWallRunning && !isJumping && !isSwimming)
+        if (state !=State.Gliding && !isGrounded && !isWallRunning && !isJumping && state != State.Swimming)
             anim.SetBool("isFalling", true);
         else
             anim.SetBool("isFalling", false);
@@ -198,20 +195,27 @@ public class PlayerMovement : MonoBehaviour
                 StartCoroutine(WallRunControl());
 
         // Gliding
-        if (Input.GetKeyDown(KeyCode.E) && !isGrounded && !isGliding && playerStamina.ApplyStaminaChangeIfAvailable(playerGliding.GetStaminaRequirement() * delta))
+        if (Input.GetKeyDown(KeyCode.E) && !isGrounded)
         {
-            ResetDownwardVelocity();
-            playerGliding.ResetGlidingSpeed();
-            isGliding = true;
-            StartCoroutine(GlidingControl());
+            if (state == State.Gliding)
+                state = State.Base;
+            else
+            {
+                ResetDownwardVelocity();
+                state = State.Gliding;
+            }
         }
 
         // Climbing
         if (Input.GetKeyDown(KeyCode.C))
         {
-            isClimbing = playerClimbing.CheckForClimb();
-            if (isClimbing)
-                isGliding = false;
+            if (playerClimbing.CheckForClimb())
+            {
+                if (state == State.Climbing)
+                    playerClimbing.DetachFromWall();
+                else
+                    state = State.Climbing;
+            }
         }
     }
 
@@ -227,6 +231,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Death()
     {
+        state = State.Base;
         transform.position = playerSpawning.GetSpawnLocation().position;
     }
 
@@ -253,17 +258,9 @@ public class PlayerMovement : MonoBehaviour
         isWallJumping = false;
     }
 
-    IEnumerator GlidingControl()
-    {
-        glidingTriggered = true;
-        yield return new WaitForSeconds(glidingTimer);
-        glidingTriggered = false;
-    }
-
     public void WallJumping() { StartCoroutine(WallJumpControl()); }
     public void ResetRotation(float yRotation) { transform.rotation = Quaternion.Euler(0, yRotation, 0); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
-    public LayerMask GetGroundMask() { return groundMask; }
+    public void SetState(State stateToSet) { state = stateToSet; }
     private void ResetDownwardVelocity() { velocity.y = groundDownwardForce; }
-    public Animator GetAnim() { return anim; }
 }
