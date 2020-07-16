@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class Swimming : MonoBehaviour
 {
+    [SerializeField] AudioSource swimmingAudio;
+    [SerializeField] string animatorBool = "isSwimming";
     [SerializeField] float defaultStaminaRequirement = -10.0f;
     [SerializeField] float sprintStaminaRequirement = -20.2f;
     [SerializeField] float defaultSpeed = 5.0f;
     [SerializeField] float sprintSpeed = 10.0f;
-    [SerializeField] string animatorBool = "isSwimming";
     float currentSpeed = 5.0f;
 
     public bool SwimmingController(CharacterController controller, Vector3 movement, bool isSprinting = false, Stamina staminaScript = null, Animator anim = null)
@@ -21,6 +22,9 @@ public class Swimming : MonoBehaviour
             if (anim != null) ResetSwimming(anim);
             return false;
         }
+
+        // if(movement != Vector3.zero && !swimmingAudio.isPlaying)
+        //     swimmingAudio.Play();
 
         float swimSpeed = defaultSpeed;
         if (isSprinting)

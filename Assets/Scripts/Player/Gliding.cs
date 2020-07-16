@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class Gliding : MonoBehaviour
 {
+    [SerializeField] string animatorBool = "isGliding";
     [SerializeField] float staminaRequirement = -5.0f;
     [SerializeField] float downwardPull = -4.0f;
     [SerializeField] float defaultSpeed = 2.0f;
     [SerializeField] float maxSpeed = 10.0f;
-    [SerializeField] string animatorBool = "isGliding";
     float currentSpeed = 2.0f;
 
     public bool GlidingMovement(CharacterController controller, Vector3 movement, Stamina staminaScript = null, Animator anim = null, GameObject gliderObject = null)

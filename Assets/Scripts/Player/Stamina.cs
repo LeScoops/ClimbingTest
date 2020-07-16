@@ -5,9 +5,9 @@ using UnityEngine.UI;
 
 public class Stamina : MonoBehaviour
 {
+    [SerializeField] Text staminaText;
     [SerializeField] float baseStamina = 100.0f;
     [SerializeField] float currentStamina;
-    [SerializeField] Text staminaText;
 
     private void Start()
     {

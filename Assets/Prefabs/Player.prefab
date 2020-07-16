@@ -15924,6 +15924,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isClimbing: 0
   mouseLook: {fileID: 7848316267954123348}
+  distanceCheckToWall: 5
   positionOffset: 1
   offsetFromWall: 0.75
   climbingSpeed: 5
@@ -15933,6 +15934,7 @@ MonoBehaviour:
   baseStaminaDrainRate: 0.4
   climbingMovementStaminaDrainRate: 7
   wallJumpStaminaUsage: 20
+  animatorBool: isClimbing
 --- !u!114 &7848316268689438344
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15946,9 +15948,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   staminaRequirement: -5
-  glidingGravity: -4
+  downwardPull: -4
   defaultSpeed: 2
   maxSpeed: 10
+  animatorBool: isGliding
 --- !u!114 &8153907031916036246
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15965,6 +15968,7 @@ MonoBehaviour:
   sprintStaminaRequirement: -20.2
   defaultSpeed: 5
   sprintSpeed: 10
+  animatorBool: isSwimming
 --- !u!114 &7848316268689438345
 MonoBehaviour:
   m_ObjectHideFlags: 0

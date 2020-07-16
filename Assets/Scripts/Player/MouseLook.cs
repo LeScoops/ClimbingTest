@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class MouseLook : MonoBehaviour
 {
+    [SerializeField] Transform player;
+    [SerializeField] Transform gimbal;
     [SerializeField] float mouseSensitivity = 75.0f;
     [SerializeField] float maxCameraDistance = 10.0f;
     [SerializeField] float minimumCameraDistance = 0.0f;
-    [SerializeField] Transform player;
-    [SerializeField] Transform gimbal;
 
     bool isClimbing = false;
     bool manualCamera = false;
@@ -63,7 +63,7 @@ public class MouseLook : MonoBehaviour
         xRotation = Mathf.Clamp(xRotation, -80.0f, 80.0f);
 
         yRotation += mouseX;
-        if (yRotation > 360.0f) yRotation = -0.0f;
+        if (yRotation > 360.0f) yRotation = 0.0f;
         else if (yRotation < 0.0f) yRotation = 360.0f;
 
         return new Vector2(mouseX, mouseY);
