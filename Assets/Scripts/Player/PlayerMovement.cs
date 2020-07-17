@@ -192,8 +192,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void SprintingController()
     {
-        if (isSprinting && isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
-            currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
+        if(xMovement > 0.01f || xMovement < -0.01f || zMovement > 0.01f || zMovement < -0.01f)
+        {
+            if (isSprinting && isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
+                currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
+        }
         else
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta * 2);
     }
