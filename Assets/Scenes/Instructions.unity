@@ -473,7 +473,10 @@ MonoBehaviour:
     While
     In The Air:
 
-    E - Toggle Gliding'
+    E - Toggle Gliding
+
+
+    Mouse Wheel - Zoom Camera'
 --- !u!222 &464249609
 CanvasRenderer:
   m_ObjectHideFlags: 0

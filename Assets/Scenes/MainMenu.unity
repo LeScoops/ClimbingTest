@@ -509,6 +509,11 @@ PrefabInstance:
       propertyPath: m_Pivot.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4391138137905163173, guid: 36fd003e7a4640e4c8225277278a65b6,
+        type: 3}
+      propertyPath: sceneToLoad
+      value: TestScene
+      objectReference: {fileID: 0}
     - target: {fileID: 4391138137905163192, guid: 36fd003e7a4640e4c8225277278a65b6,
         type: 3}
       propertyPath: m_Name
