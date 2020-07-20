@@ -245,13 +245,6 @@ public class PlayerMovement : MonoBehaviour
 
         return false;
     }
-
-    private void Death()
-    {
-        state = State.Base;
-        transform.position = playerSpawning.GetSpawnLocation().position;
-    }
-
     IEnumerator JumpControl()
     {
         anim.SetTrigger("isJumping");
@@ -278,6 +271,12 @@ public class PlayerMovement : MonoBehaviour
     public void WallJumping() { StartCoroutine(WallJumpControl()); }
     public void ResetRotation(float yRotation) { transform.rotation = Quaternion.Euler(0, yRotation, 0); }
     public void ResetCurrentSpeed() { currentSpeed = baseSpeed; }
-    public void SetState(State stateToSet) { state = stateToSet; }
+    public void SetState(State stateToSet) { state = stateToSet; }    
+    public void Death()
+    {
+        state = State.Base;
+        transform.position = playerSpawning.GetSpawnLocation().position;
+    }
+
     private void ResetDownwardVelocity() { velocity.y = groundDownwardForce; }
 }

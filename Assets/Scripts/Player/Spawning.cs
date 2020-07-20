@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Spawning : MonoBehaviour
 {
-    public Transform GetSpawnLocation()
+        public Transform GetSpawnLocation()
     {
         return this.transform;
     }
