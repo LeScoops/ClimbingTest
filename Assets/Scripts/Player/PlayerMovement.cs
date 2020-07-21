@@ -17,9 +17,9 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float sprintingStaminaRequirement = -7.5f;
     [SerializeField] float jumpHeight = 2.0f;
     [SerializeField] float groundDistance = 0.4f;
-    [SerializeField] float gravity = -9.81f;
+    [SerializeField] float gravity = -19.62f;
     [SerializeField] float groundDownwardForce = -5.0f;
-    [SerializeField] float staminaRechargeRate = 1.0f;
+    [SerializeField] float staminaRechargeRate = 20.0f;
     [SerializeField] float wallRunDistance = 3.0f;
     [SerializeField] float isJumpingTimer = 1.5f;
     [SerializeField] float isWallJumpingTimer = 0.25f;
@@ -126,7 +126,7 @@ public class PlayerMovement : MonoBehaviour
             if (playerClimbing.CheckForClimb(groundMask))
             {
                 if (state == State.Climbing)
-                    playerClimbing.DetachFromWall();
+                    playerClimbing.ExitClimbing();
                 else
                 {
                     state = State.Climbing;
@@ -204,10 +204,10 @@ public class PlayerMovement : MonoBehaviour
     private void AnimationAndAudioController()
     {
         if (state != State.Gliding)
-            playerGliding.ResetGliding(anim, glider);
+            playerGliding.ExitGliding(anim, glider);
 
         if(state != State.Swimming)
-            playerSwimming.ResetSwimming(anim);
+            playerSwimming.ExitSwimming(anim);
 
 
         anim.SetFloat("xMovement", xMovement);

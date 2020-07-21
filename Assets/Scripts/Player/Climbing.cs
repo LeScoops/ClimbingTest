@@ -8,7 +8,7 @@ public class Climbing : MonoBehaviour
     [SerializeField] MouseLook mouseLook;
     [SerializeField] float distanceCheckToWall = 5.0f;
     [SerializeField] float positionOffset = 1.0f;
-    [SerializeField] float offsetFromWall = 0.3f;
+    [SerializeField] float offsetFromWall = 0.75f;
     [SerializeField] float climbingSpeed = 5.0f;
     [SerializeField] float rotateSpeed = 5.0f;
     [SerializeField] float rayTowardsMoveDirection = 1.0f;
@@ -44,11 +44,11 @@ public class Climbing : MonoBehaviour
         float delta = Time.deltaTime;
         if (animGiven != null) { anim = animGiven; animGiven.SetBool(animatorBool, true); }
         if (playerStamina != null && !playerStamina.ApplyStaminaChangeIfAvailable(-baseStaminaDrainRate * delta))
-            DetachFromWall();
+            ExitClimbing();
 
         if (Input.GetButtonDown("Jump") && playerStamina != null && playerStamina.ApplyStaminaChangeIfAvailable(-wallJumpStaminaUsage))
         {
-            DetachFromWall();
+            ExitClimbing();
             playerMovementScript.WallJumping();
         }
 
@@ -93,7 +93,7 @@ public class Climbing : MonoBehaviour
             transform.rotation = Quaternion.Slerp(transform.rotation, climbingHelper.rotation, delta * rotateSpeed);
 
             if (playerStamina != null && !playerStamina.ApplyStaminaChangeIfAvailable(-climbingMovementStaminaDrainRate * delta))
-                DetachFromWall();
+                ExitClimbing();
 
             if (anim != null) { anim.SetTrigger("ClimbMovement"); }
 
@@ -210,7 +210,7 @@ public class Climbing : MonoBehaviour
         Vector3 direction = Vector3.down;
 
         if (Physics.Raycast(origin, direction, out hit, 1.2f))
-            DetachFromWall();
+            ExitClimbing();
     }
 
     public void ResetClimbing()
@@ -218,7 +218,7 @@ public class Climbing : MonoBehaviour
         anim.SetBool(animatorBool, false);
     }
 
-    public void DetachFromWall()
+    public void ExitClimbing()
     {
         isClimbing = false;
         inPosition = false;

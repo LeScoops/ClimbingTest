@@ -19,7 +19,7 @@ public class Swimming : MonoBehaviour
             isSprinting? !staminaScript.ApplyStaminaChangeIfAvailable(sprintStaminaRequirement * delta):
             !staminaScript.ApplyStaminaChangeIfAvailable(defaultStaminaRequirement * delta))
         {
-            if (anim != null) ResetSwimming(anim);
+            if (anim != null) ExitSwimming(anim);
             return false;
         }
 
@@ -38,7 +38,7 @@ public class Swimming : MonoBehaviour
         return true;
     }
 
-    public void ResetSwimming(Animator anim)
+    public void ExitSwimming(Animator anim)
     {
         anim.SetBool(animatorBool, false);
     }

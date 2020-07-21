@@ -16,7 +16,7 @@ public class Gliding : MonoBehaviour
         float delta = Time.deltaTime;
         if (staminaScript != null && !staminaScript.ApplyStaminaChangeIfAvailable(staminaRequirement * delta))
         {
-            if (anim != null && gliderObject != null) { ResetGliding(anim, gliderObject); }
+            if (anim != null && gliderObject != null) { ExitGliding(anim, gliderObject); }
             ResetGlidingSpeed();
             return false;
         }
@@ -32,7 +32,7 @@ public class Gliding : MonoBehaviour
         return true;
     }
 
-    public void ResetGliding(Animator anim, GameObject gliderObject)
+    public void ExitGliding(Animator anim, GameObject gliderObject)
     {
         anim.SetBool(animatorBool, false);
         gliderObject.SetActive(false);
