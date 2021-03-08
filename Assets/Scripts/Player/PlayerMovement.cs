@@ -196,6 +196,8 @@ public class PlayerMovement : MonoBehaviour
         {
             if (isSprinting && isGrounded && playerStamina.ApplyStaminaChangeIfAvailable(sprintingStaminaRequirement * delta))
                 currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed * sprintModifier, delta);
+            else
+                currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta * 2);
         }
         else
             currentSpeed = Mathf.Lerp(currentSpeed, baseSpeed, delta * 2);
